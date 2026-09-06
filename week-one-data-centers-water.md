@@ -5,10 +5,7 @@ description: "An environmental-economics framework for evaluating the real costs
 permalink: /week-one/data-centers-water/
 ---
 
-*An environmental-economics perspective on how to evaluate a data-center proposal without mistaking a dramatic headline for a complete cost-benefit analysis.*
-
-> “New AI data center will consume 800,000 gallons of water every day.”  
-> — *Campus Times*, August 2026
+800,000 Gallons Sounds Terrifying. Here Are Some Questions to Ask Before You Panic.
 
 At first glance, 800,000 gallons sounds like an immense amount of water. The word “consume” makes it sound as though the water disappears, and AI already has a reputation for being unwanted and disastrous. From an emotional standpoint, the verdict is simple: stop the project.
 
