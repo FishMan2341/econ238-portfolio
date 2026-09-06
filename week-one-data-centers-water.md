@@ -1,7 +1,6 @@
 ---
 layout: page
 title: "800,000 Gallons Sounds Terrifying: Five Questions to Ask Before You Panic"
-description: "An environmental-economics framework for evaluating the real costs and benefits of large data centers."
 permalink: /week-one/data-centers-water/
 ---
 
