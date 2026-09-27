@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>More Americans, Fewer Storm Deaths Per Person</title>
+<meta name="description" content="86 years of U.S. weather-death data, one migration puzzle, and why 555 heat deaths and 120,000 temperature deaths can both be true. Econ 238, University of Rochester.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f7f5f0; --surface:#fcfcfb; --ink:#141412; --ink-2:#52514e; --muted:#77756f;
+  --rule:#dedbd3; --grid:#e8e5de; --accent:#b8401f; --accent-soft:#f6e3db;
+  --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a; --pos:#e34948; --neg:#2a78d6;
+  --callout:#fff8e6; --callout-rule:#eda100;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#121211; --surface:#1a1a19; --ink:#f4f3ef; --ink-2:#c3c2b7; --muted:#9a988f;
+    --rule:#34332f; --grid:#2c2b28; --accent:#f08a63; --accent-soft:#3a2219;
+    --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70; --pos:#e66767; --neg:#3987e5;
+    --callout:#2a2414; --callout-rule:#c98500;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#121211; --surface:#1a1a19; --ink:#f4f3ef; --ink-2:#c3c2b7; --muted:#9a988f;
+  --rule:#34332f; --grid:#2c2b28; --accent:#f08a63; --accent-soft:#3a2219;
+  --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70; --pos:#e66767; --neg:#3987e5;
+  --callout:#2a2414; --callout-rule:#c98500;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.62 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+header.hero{padding:56px 0 28px;border-bottom:1px solid var(--rule)}
+.kicker{font:600 13px/1.3 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+h1{font:800 clamp(34px,6.4vw,58px)/1.04 Fraunces,Georgia,serif;letter-spacing:-.01em;margin:0 0 18px;text-wrap:balance}
+.dek{font-size:clamp(18px,2.6vw,21px);line-height:1.5;color:var(--ink-2);margin:0 0 22px;text-wrap:pretty}
+.byline{font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+.byline a.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:8px 14px;border-radius:8px}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:28px 0 8px}
+@media (min-width:700px){.tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.tile{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:14px 14px 12px}
+.tile .n{font:800 26px/1.1 Fraunces,Georgia,serif;display:block;margin-bottom:6px;font-variant-numeric:tabular-nums}
+.tile .l{font-size:13px;line-height:1.4;color:var(--ink-2);display:block}
+main section{padding:34px 0 8px;border-bottom:1px solid var(--rule)}
+h2{font:800 clamp(25px,4vw,32px)/1.15 Fraunces,Georgia,serif;margin:0 0 14px;text-wrap:balance}
+h3{font:700 18px/1.3 Inter,sans-serif;margin:24px 0 8px}
+p{margin:0 0 16px;text-wrap:pretty}
+.lead::first-letter{font:800 3.1em/0.9 Fraunces,Georgia,serif;float:left;margin:6px 8px 0 0;color:var(--accent)}
+figure{margin:22px 0 24px;background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:16px 14px 12px}
+figure .ft{font:700 16px/1.3 Inter,sans-serif;margin:0 4px 2px}
+figure .fs{font-size:13.5px;color:var(--ink-2);margin:0 4px 8px}
+figcaption{font-size:12.5px;line-height:1.5;color:var(--muted);margin:8px 4px 0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--ink-2);margin:4px 4px 6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+.chartbox{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:620px){.chartbox svg.chart{min-width:560px}.chartbox::after{content:'← swipe to see full chart →';display:block;font-size:11.5px;color:var(--muted);text-align:center;margin-top:4px;position:sticky;left:0}}
+svg .grid{stroke:var(--grid);stroke-width:1}
+svg .grid.base{stroke:var(--muted);stroke-width:1.2}
+svg .tick{fill:var(--muted);font-size:13px}
+svg .tick.b{fill:var(--ink-2);font-weight:600}
+svg .axlab{fill:var(--ink-2);font-size:13px;font-weight:600}
+svg .val{fill:var(--ink);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+svg .note{fill:var(--ink-2);font-size:12.5px;font-style:italic}
+svg .s1{fill:var(--series-1)} svg .s2{fill:var(--series-2)} svg .s3{fill:var(--series-3)}
+svg .pos{fill:var(--pos)} svg .neg{fill:var(--neg)}
+svg path[data-tip]:hover{opacity:.82}
+details{margin:8px 4px 0;font-size:13.5px}
+summary{cursor:pointer;color:var(--accent);font-weight:600}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums;margin-top:8px}
+th,td{padding:5px 6px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--ink-2);font-weight:600}
+.callout{background:var(--callout);border-left:4px solid var(--callout-rule);border-radius:0 12px 12px 0;padding:16px 18px;margin:22px 0}
+.callout h3{margin-top:0}
+.callout ol,.callout ul{margin:0;padding-left:20px}
+.callout li{margin-bottom:6px}
+.caveat{font-size:14px;color:var(--ink-2);background:var(--surface);border:1px dashed var(--rule);border-radius:12px;padding:12px 16px;margin:18px 0}
+.caveat b{color:var(--ink)}
+.pull{font:600 clamp(21px,3.2vw,26px)/1.35 Fraunces,Georgia,serif;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:16px 0;margin:26px 0;text-wrap:balance}
+.calc{font-variant-numeric:tabular-nums;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:12px 16px;margin:14px 0;font-size:15px}
+.calc div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dotted var(--rule);padding:4px 0}
+.calc div:last-child{border-bottom:0;font-weight:700}
+.wait{background:var(--accent-soft);border-radius:14px;padding:20px 20px 6px;margin:18px 0}
+.wait h3{margin-top:4px}
+ol.sources{font-size:13.5px;line-height:1.5;padding-left:22px;color:var(--ink-2)}
+ol.sources li{margin-bottom:6px;overflow-wrap:anywhere}
+sup.cite{font-size:.68em;line-height:0;margin-left:1px}
+sup.cite a{text-decoration:none;font-weight:600}
+footer{padding:28px 0 60px;font-size:13px;color:var(--muted)}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;line-height:1.4;padding:6px 9px;border-radius:6px;max-width:260px;opacity:0;transition:opacity .08s;z-index:9}
+.theme-toggle{background:none;border:1px solid var(--rule);color:var(--ink-2);border-radius:8px;padding:6px 10px;font:500 13px Inter,sans-serif;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="tip" role="tooltip"></div>
+<div class="wrap">
+<header class="hero">
+  <p class="kicker">Econ 238 · Weather, risk &amp; adaptation</p>
+  <h1>More Americans, Fewer Storm Deaths Per Person</h1>
+  <p class="dek" style="font-family:Fraunces,Georgia,serif;font-weight:600;color:var(--ink)">What 86 years of U.S. weather data say about adaptation</p>
+  <p class="dek">Deaths from tornadoes, floods and hurricanes held roughly steady while the population more than doubled. Heat is the exception, and how heat deaths are counted changes the answer.</p>
+  <div class="byline">
+    <span>By <b>Omer Okutan</b> · University of Rochester · September 2026</span>
+    <a class="btn" href="weather-mortality-poster.pdf" download>Download the 18×24 poster (PDF)</a>
+    <button class="theme-toggle" id="themeBtn" type="button" aria-label="Toggle dark mode">Light / dark</button>
+  </div>
+  <div class="tiles">
+    <div class="tile"><span class="n">262 → 195</span><span class="l">tornado + flood + hurricane deaths per year, 1940s vs. 2010s</span></div>
+    <div class="tile"><span class="n">1.88 → 0.61</span><span class="l">the same deaths per million Americans: a two-thirds drop</span></div>
+    <div class="tile"><span class="n">+2.9 million</span><span class="l">net domestic movers into the hottest 40% of counties, 2020–25</span></div>
+    <div class="tile"><span class="n">555 vs. ~120,000</span><span class="l">NWS heat deaths (2023) vs. all temperature-attributable deaths per year</span></div>
+  </div>
+</header>
+
+<main>
+<section id="open">
+  <p class="lead">In 1953, tornadoes killed 515 Americans. In 2011, they killed 553.<sup class='cite'><a href='#src-1'>1</a></sup> If you only read those two numbers, it looks like sixty years of Doppler radar, building codes, and phone alerts bought us nothing. But in 1953 there were about 160 million of us. In 2011 there were over 312 million.<sup class='cite'><a href='#src-3'>3</a></sup> Roughly the same number of funerals, spread over twice as many people, is not standing still. It is getting twice as good at not dying.</p>
+  <p>That is the whole story of this page in miniature: <b>the number you divide by changes the verdict.</b> Below, I walk through what official U.S. data actually show about storm deaths since 1940, where Americans are moving, why heat is the one line pointing the wrong way, and why the scariest temperature statistic you will see this year is measuring something completely different from the ones the Weather Service reports.</p>
+</section>
+
+<section id="storms">
+  <h2>The count stayed flat. The country didn’t.</h2>
+  <p>Let’s start with the raw data. The National Weather Service keeps a list of deaths from tornadoes, floods, and hurricanes going back to 1940.<sup class='cite'><a href='#src-1'>1</a></sup> Averaging each decade gives the chart below. Across the entire period (1940–2025, 86 years, 20,676 deaths), the average is about <b>240 deaths per year</b>. Decade to decade, the total bounces between roughly 170 and 310, with no clear direction. Based on raw counts alone, you would say nothing much has changed.</p>
+  <figure>
+    <p class="ft">Raw count: storm deaths per year barely moved</p>
+    <p class="fs">Annual-average U.S. deaths by decade, tornadoes + floods + hurricanes</p>
+    <div class="legend"><span><i style="background:var(--series-1)"></i>Tornado</span><span><i style="background:var(--series-2)"></i>Flood</span><span><i style="background:var(--series-3)"></i>Hurricane (wind only)</span></div>
+    <div class="chartbox"><svg class="chart" viewBox="0 0 760 380" role="img" aria-label="Stacked bar chart: annual-average U.S. deaths from tornadoes, floods and hurricanes by decade, 1940s to 2020-2025" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+<line x1="56" x2="744" y1="336.0" y2="336.0" class="grid base"/>
+<text x="48" y="340.0" class="tick" text-anchor="end">0</text>
+<line x1="56" x2="744" y1="293.7" y2="293.7" class="grid"/>
+<text x="48" y="297.7" class="tick" text-anchor="end">50</text>
+<line x1="56" x2="744" y1="251.4" y2="251.4" class="grid"/>
+<text x="48" y="255.4" class="tick" text-anchor="end">100</text>
+<line x1="56" x2="744" y1="209.1" y2="209.1" class="grid"/>
+<text x="48" y="213.1" class="tick" text-anchor="end">150</text>
+<line x1="56" x2="744" y1="166.9" y2="166.9" class="grid"/>
+<text x="48" y="170.9" class="tick" text-anchor="end">200</text>
+<line x1="56" x2="744" y1="124.6" y2="124.6" class="grid"/>
+<text x="48" y="128.6" class="tick" text-anchor="end">250</text>
+<line x1="56" x2="744" y1="82.3" y2="82.3" class="grid"/>
+<text x="48" y="86.3" class="tick" text-anchor="end">300</text>
+<line x1="56" x2="744" y1="40.0" y2="40.0" class="grid"/>
+<text x="48" y="44.0" class="tick" text-anchor="end">350</text>
+<text x="12" y="24" class="axlab">Deaths per year (annual average)</text>
+<path d="M70.5,184.8 H117.9 V336.0 H70.5 Z" class="s1" data-tip="1940-1949: Tornado 178.8 deaths/yr"><title>1940-1949: Tornado 178.8 deaths/yr</title></path>
+<path d="M70.5,132.4 H117.9 V182.8 H70.5 Z" class="s2" data-tip="1940-1949: Flood 61.9 deaths/yr"><title>1940-1949: Flood 61.9 deaths/yr</title></path>
+<path d="M70.5,130.4 V118.2 Q70.5,114.2 74.5,114.2 H113.9 Q117.9,114.2 117.9,118.2 V130.4 Z" class="s3" data-tip="1940-1949: Hurricane (wind) 21.6 deaths/yr"><title>1940-1949: Hurricane (wind) 21.6 deaths/yr</title></path>
+<text x="94.2" y="354" class="tick" text-anchor="middle">1940s</text>
+<text x="94.2" y="108.2" class="val" text-anchor="middle">262</text>
+<path d="M147.0,216.8 H194.4 V336.0 H147.0 Z" class="s1" data-tip="1950-1959: Tornado 140.9 deaths/yr"><title>1950-1959: Tornado 140.9 deaths/yr</title></path>
+<path d="M147.0,149.9 H194.4 V214.8 H147.0 Z" class="s2" data-tip="1950-1959: Flood 79.1 deaths/yr"><title>1950-1959: Flood 79.1 deaths/yr</title></path>
+<path d="M147.0,147.9 V79.8 Q147.0,75.8 151.0,75.8 H190.4 Q194.4,75.8 194.4,79.8 V147.9 Z" class="s3" data-tip="1950-1959: Hurricane (wind) 87.7 deaths/yr"><title>1950-1959: Hurricane (wind) 87.7 deaths/yr</title></path>
+<text x="170.7" y="354" class="tick" text-anchor="middle">1950s</text>
+<text x="170.7" y="69.8" class="val" text-anchor="middle">308</text>
+<path d="M223.4,256.9 H270.8 V336.0 H223.4 Z" class="s1" data-tip="1960-1969: Tornado 93.5 deaths/yr"><title>1960-1969: Tornado 93.5 deaths/yr</title></path>
+<path d="M223.4,147.2 H270.8 V254.9 H223.4 Z" class="s2" data-tip="1960-1969: Flood 129.7 deaths/yr"><title>1960-1969: Flood 129.7 deaths/yr</title></path>
+<path d="M223.4,145.2 V101.6 Q223.4,97.6 227.4,97.6 H266.8 Q270.8,97.6 270.8,101.6 V145.2 Z" class="s3" data-tip="1960-1969: Hurricane (wind) 58.7 deaths/yr"><title>1960-1969: Hurricane (wind) 58.7 deaths/yr</title></path>
+<text x="247.1" y="354" class="tick" text-anchor="middle">1960s</text>
+<text x="247.1" y="91.6" class="val" text-anchor="middle">282</text>
+<path d="M299.9,252.6 H347.3 V336.0 H299.9 Z" class="s1" data-tip="1970-1979: Tornado 98.6 deaths/yr"><title>1970-1979: Tornado 98.6 deaths/yr</title></path>
+<path d="M299.9,98.8 H347.3 V250.6 H299.9 Z" class="s2" data-tip="1970-1979: Flood 181.9 deaths/yr"><title>1970-1979: Flood 181.9 deaths/yr</title></path>
+<path d="M299.9,96.8 V84.4 Q299.9,80.4 303.9,80.4 H343.3 Q347.3,80.4 347.3,84.4 V96.8 Z" class="s3" data-tip="1970-1979: Hurricane (wind) 21.7 deaths/yr"><title>1970-1979: Hurricane (wind) 21.7 deaths/yr</title></path>
+<text x="323.6" y="354" class="tick" text-anchor="middle">1970s</text>
+<text x="323.6" y="74.4" class="val" text-anchor="middle">302</text>
+<path d="M376.3,291.9 H423.7 V336.0 H376.3 Z" class="s1" data-tip="1980-1989: Tornado 52.1 deaths/yr"><title>1980-1989: Tornado 52.1 deaths/yr</title></path>
+<path d="M376.3,199.2 H423.7 V289.9 H376.3 Z" class="s2" data-tip="1980-1989: Flood 109.7 deaths/yr"><title>1980-1989: Flood 109.7 deaths/yr</title></path>
+<path d="M376.3,197.2 V193.2 Q376.3,189.2 380.3,189.2 H419.7 Q423.7,189.2 423.7,193.2 V197.2 Z" class="s3" data-tip="1980-1989: Hurricane (wind) 11.8 deaths/yr"><title>1980-1989: Hurricane (wind) 11.8 deaths/yr</title></path>
+<text x="400.0" y="354" class="tick" text-anchor="middle">1980s</text>
+<text x="400.0" y="183.2" class="val" text-anchor="middle">174</text>
+<path d="M452.7,287.0 H500.1 V336.0 H452.7 Z" class="s1" data-tip="1990-1999: Tornado 57.9 deaths/yr"><title>1990-1999: Tornado 57.9 deaths/yr</title></path>
+<path d="M452.7,203.1 H500.1 V285.0 H452.7 Z" class="s2" data-tip="1990-1999: Flood 99.2 deaths/yr"><title>1990-1999: Flood 99.2 deaths/yr</title></path>
+<path d="M452.7,201.1 V195.3 Q452.7,191.3 456.7,191.3 H496.1 Q500.1,191.3 500.1,195.3 V201.1 Z" class="s3" data-tip="1990-1999: Hurricane (wind) 14.0 deaths/yr"><title>1990-1999: Hurricane (wind) 14.0 deaths/yr</title></path>
+<text x="476.4" y="354" class="tick" text-anchor="middle">1990s</text>
+<text x="476.4" y="185.3" class="val" text-anchor="middle">171</text>
+<path d="M529.2,288.8 H576.6 V336.0 H529.2 Z" class="s1" data-tip="2000-2009: Tornado 55.8 deaths/yr"><title>2000-2009: Tornado 55.8 deaths/yr</title></path>
+<path d="M529.2,234.1 H576.6 V286.8 H529.2 Z" class="s2" data-tip="2000-2009: Flood 64.7 deaths/yr"><title>2000-2009: Flood 64.7 deaths/yr</title></path>
+<path d="M529.2,232.1 V140.5 Q529.2,136.5 533.2,136.5 H572.6 Q576.6,136.5 576.6,140.5 V232.1 Z" class="s3" data-tip="2000-2009: Hurricane (wind) 115.4 deaths/yr"><title>2000-2009: Hurricane (wind) 115.4 deaths/yr</title></path>
+<text x="552.9" y="354" class="tick" text-anchor="middle">2000s</text>
+<text x="552.9" y="130.5" class="val" text-anchor="middle">236</text>
+<path d="M605.6,259.0 H653.0 V336.0 H605.6 Z" class="s1" data-tip="2010-2019: Tornado 91.0 deaths/yr"><title>2010-2019: Tornado 91.0 deaths/yr</title></path>
+<path d="M605.6,175.5 H653.0 V257.0 H605.6 Z" class="s2" data-tip="2010-2019: Flood 98.8 deaths/yr"><title>2010-2019: Flood 98.8 deaths/yr</title></path>
+<path d="M605.6,173.5 V173.5 Q605.6,171.0 608.1,171.0 H650.5 Q653.0,171.0 653.0,173.5 V173.5 Z" class="s3" data-tip="2010-2019: Hurricane (wind) 5.3 deaths/yr"><title>2010-2019: Hurricane (wind) 5.3 deaths/yr</title></path>
+<text x="629.3" y="354" class="tick" text-anchor="middle">2010s</text>
+<text x="629.3" y="165.0" class="val" text-anchor="middle">195</text>
+<path d="M682.1,278.5 H729.5 V336.0 H682.1 Z" class="s1" data-tip="2020-2025: Tornado 68.0 deaths/yr"><title>2020-2025: Tornado 68.0 deaths/yr</title></path>
+<path d="M682.1,174.0 H729.5 V276.5 H682.1 Z" class="s2" data-tip="2020-2025: Flood 123.5 deaths/yr"><title>2020-2025: Flood 123.5 deaths/yr</title></path>
+<path d="M682.1,172.0 V145.7 Q682.1,141.7 686.1,141.7 H725.5 Q729.5,141.7 729.5,145.7 V172.0 Z" class="s3" data-tip="2020-2025: Hurricane (wind) 38.2 deaths/yr"><title>2020-2025: Hurricane (wind) 38.2 deaths/yr</title></path>
+<text x="705.8" y="354" class="tick" text-anchor="middle">2020–25*</text>
+<text x="705.8" y="135.7" class="val" text-anchor="middle">230</text>
+<text x="552.9" y="141.7" class="note" text-anchor="middle"></text>
+</svg></div>
+    <figcaption>* 2020–25 averages six years; 2025 is preliminary. The 2000s bar is lifted by Hurricane Katrina (2005: 1,016 NWS hurricane deaths); without 2005 the decade averages 140. Source: NWS 81-Year List.<sup class='cite'><a href='#src-1'>1</a></sup></figcaption>
+  </figure>
+  <p>Now do what an economist should always do with a big number: ask “per what?” Dividing each decade’s average by the average U.S. population that decade gives a <b>death intensity</b> statistic, deaths per million residents per year.<sup class='cite'><a href='#src-1'>1</a>,<a href='#src-3'>3</a></sup></p>
+  <div class="calc"><div><span>Death intensity</span><span>annual-average deaths ÷ average population × 1,000,000</span></div><div><span>1940s</span><span>262.3 ÷ 139.7 M = 1.88 per million</span></div><div><span>2010s</span><span>195.1 ÷ 320.6 M = 0.61 per million</span></div></div>
+  <figure>
+    <p class="ft">Per person: the risk fell by about two-thirds</p>
+    <p class="fs">Tornado + flood + hurricane deaths per million U.S. residents per year</p>
+    <div class="chartbox"><svg class="chart" viewBox="0 0 760 330" role="img" aria-label="Bar chart: tornado, flood and hurricane deaths per million U.S. residents per year, by decade" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+<line x1="56" x2="744" y1="286.0" y2="286.0" class="grid base"/>
+<text x="48" y="290.0" class="tick" text-anchor="end">0.0</text>
+<line x1="56" x2="744" y1="224.5" y2="224.5" class="grid"/>
+<text x="48" y="228.5" class="tick" text-anchor="end">0.5</text>
+<line x1="56" x2="744" y1="163.0" y2="163.0" class="grid"/>
+<text x="48" y="167.0" class="tick" text-anchor="end">1.0</text>
+<line x1="56" x2="744" y1="101.5" y2="101.5" class="grid"/>
+<text x="48" y="105.5" class="tick" text-anchor="end">1.5</text>
+<line x1="56" x2="744" y1="40.0" y2="40.0" class="grid"/>
+<text x="48" y="44.0" class="tick" text-anchor="end">2.0</text>
+<text x="12" y="24" class="axlab">Deaths per million residents per year</text>
+<path d="M70.5,286.0 V59.0 Q70.5,55.0 74.5,55.0 H113.9 Q117.9,55.0 117.9,59.0 V286.0 Z" class="s1" data-tip="1940s: 1.88 deaths per million per year (avg pop 139.7M)"><title>1940s: 1.88 deaths per million per year (avg pop 139.7M)</title></path>
+<text x="94.2" y="304" class="tick" text-anchor="middle">1940s</text>
+<text x="94.2" y="49.0" class="val" text-anchor="middle">1.88</text>
+<path d="M147.0,286.0 V59.4 Q147.0,55.4 151.0,55.4 H190.4 Q194.4,55.4 194.4,59.4 V286.0 Z" class="s1" data-tip="1950s: 1.88 deaths per million per year (avg pop 164.1M)"><title>1950s: 1.88 deaths per million per year (avg pop 164.1M)</title></path>
+<text x="170.7" y="304" class="tick" text-anchor="middle">1950s</text>
+<text x="170.7" y="49.4" class="val" text-anchor="middle">1.88</text>
+<path d="M223.4,286.0 V109.9 Q223.4,105.9 227.4,105.9 H266.8 Q270.8,105.9 270.8,109.9 V286.0 Z" class="s1" data-tip="1960s: 1.46 deaths per million per year (avg pop 192.5M)"><title>1960s: 1.46 deaths per million per year (avg pop 192.5M)</title></path>
+<text x="247.1" y="304" class="tick" text-anchor="middle">1960s</text>
+<text x="247.1" y="99.9" class="val" text-anchor="middle">1.46</text>
+<path d="M299.9,286.0 V117.2 Q299.9,113.2 303.9,113.2 H343.3 Q347.3,113.2 347.3,117.2 V286.0 Z" class="s1" data-tip="1970s: 1.41 deaths per million per year (avg pop 215.1M)"><title>1970s: 1.41 deaths per million per year (avg pop 215.1M)</title></path>
+<text x="323.6" y="304" class="tick" text-anchor="middle">1970s</text>
+<text x="323.6" y="107.2" class="val" text-anchor="middle">1.41</text>
+<path d="M376.3,286.0 V200.1 Q376.3,196.1 380.3,196.1 H419.7 Q423.7,196.1 423.7,200.1 V286.0 Z" class="s1" data-tip="1980s: 0.73 deaths per million per year (avg pop 237.5M)"><title>1980s: 0.73 deaths per million per year (avg pop 237.5M)</title></path>
+<text x="400.0" y="304" class="tick" text-anchor="middle">1980s</text>
+<text x="400.0" y="190.1" class="val" text-anchor="middle">0.73</text>
+<path d="M452.7,286.0 V210.5 Q452.7,206.5 456.7,206.5 H496.1 Q500.1,206.5 500.1,210.5 V286.0 Z" class="s1" data-tip="1990s: 0.65 deaths per million per year (avg pop 264.9M)"><title>1990s: 0.65 deaths per million per year (avg pop 264.9M)</title></path>
+<text x="476.4" y="304" class="tick" text-anchor="middle">1990s</text>
+<text x="476.4" y="200.5" class="val" text-anchor="middle">0.65</text>
+<path d="M529.2,286.0 V191.6 Q529.2,187.6 533.2,187.6 H572.6 Q576.6,187.6 576.6,191.6 V286.0 Z" class="s1" data-tip="2000s: 0.80 deaths per million per year (avg pop 294.8M)"><title>2000s: 0.80 deaths per million per year (avg pop 294.8M)</title></path>
+<text x="552.9" y="304" class="tick" text-anchor="middle">2000s</text>
+<text x="552.9" y="181.6" class="val" text-anchor="middle">0.80</text>
+<path d="M605.6,286.0 V215.2 Q605.6,211.2 609.6,211.2 H649.0 Q653.0,211.2 653.0,215.2 V286.0 Z" class="s1" data-tip="2010s: 0.61 deaths per million per year (avg pop 320.6M)"><title>2010s: 0.61 deaths per million per year (avg pop 320.6M)</title></path>
+<text x="629.3" y="304" class="tick" text-anchor="middle">2010s</text>
+<text x="629.3" y="205.2" class="val" text-anchor="middle">0.61</text>
+<path d="M682.1,286.0 V206.0 Q682.1,202.0 686.1,202.0 H725.5 Q729.5,202.0 729.5,206.0 V286.0 Z" class="s1" data-tip="2020–25*: 0.68 deaths per million per year (avg pop 336.3M)"><title>2020–25*: 0.68 deaths per million per year (avg pop 336.3M)</title></path>
+<text x="705.8" y="304" class="tick" text-anchor="middle">2020–25*</text>
+<text x="705.8" y="196.0" class="val" text-anchor="middle">0.68</text>
+</svg></div>
+    <figcaption>Population is the BEA midyear resident series, averaged over each decade’s years.<sup class='cite'><a href='#src-3'>3</a></sup> Same deaths as the chart above, different denominator.</figcaption>
+    <details><summary>Show the data table</summary><div class="tbl"><table><thead><tr><th>Decade</th><th>Tornado</th><th>Flood</th><th>Hurricane</th><th>Total /yr</th><th>Avg pop (M)</th><th>Per million</th></tr></thead><tbody><tr><td>1940–1949</td><td>178.8</td><td>61.9</td><td>21.6</td><td><b>262.3</b></td><td>139.7</td><td><b>1.88</b></td></tr>
+<tr><td>1950–1959</td><td>140.9</td><td>79.1</td><td>87.7</td><td><b>307.7</b></td><td>164.1</td><td><b>1.88</b></td></tr>
+<tr><td>1960–1969</td><td>93.5</td><td>129.7</td><td>58.7</td><td><b>281.9</b></td><td>192.5</td><td><b>1.46</b></td></tr>
+<tr><td>1970–1979</td><td>98.6</td><td>181.9</td><td>21.7</td><td><b>302.2</b></td><td>215.1</td><td><b>1.41</b></td></tr>
+<tr><td>1980–1989</td><td>52.1</td><td>109.7</td><td>11.8</td><td><b>173.6</b></td><td>237.5</td><td><b>0.73</b></td></tr>
+<tr><td>1990–1999</td><td>57.9</td><td>99.2</td><td>14.0</td><td><b>171.1</b></td><td>264.9</td><td><b>0.65</b></td></tr>
+<tr><td>2000–2009</td><td>55.8</td><td>64.7</td><td>115.4</td><td><b>235.9</b></td><td>294.8</td><td><b>0.80</b></td></tr>
+<tr><td>2010–2019</td><td>91.0</td><td>98.8</td><td>5.3</td><td><b>195.1</b></td><td>320.6</td><td><b>0.61</b></td></tr>
+<tr><td>2020–2025 *</td><td>68.0</td><td>123.5</td><td>38.2</td><td><b>229.7</b></td><td>336.3</td><td><b>0.68</b></td></tr></tbody></table></div></details>
+  </figure>
+  <p>The count stayed flat while the country more than doubled, so the typical American’s chance of dying in one of these storms in a given year fell from about 1 in 530,000 to about 1 in 1.6 million. That is roughly <b>three times safer</b>. Most of the drop happened between the 1970s and the 1980s and has held since.</p>
+  <div class="caveat"><b>Read the fine print.</b> NWS counts come from <em>Storm Data</em> reports filed by local forecast offices. In the modern data the “hurricane” column counts wind deaths only; storm-surge and rain-flood deaths are filed under Flood.<sup class='cite'><a href='#src-2'>2</a></sup> So the hurricane bars understate total hurricane deaths, and single catastrophes (Katrina) swing whole decades. The CDC, not the NWS, is the official source for cause of death.<sup class='cite'><a href='#src-2'>2</a></sup></div>
+
+  <h3>Why fewer of us die: safety is something we buy</h3>
+  <p>Nobody repealed tornadoes. What changed is how much protection people and institutions could afford and how cheaply they could get it. Safety behaves like a normal good: as incomes rise, people buy more of it, in the form of sturdier houses, cars that can outrun a flood, and basements. Information got dramatically cheaper, too, so a warning that once reached a town by siren now buzzes in every pocket. Public institutions (forecasting, building codes, emergency management) make the fixed investments no single household would. I can’t pin down from this data which of these did the most work, but at least one piece has been measured carefully: the rise of home air conditioning explains essentially the entire decline in the U.S. mortality effect of extremely hot days, which fell about 80% between 1900–1959 and 1960–2004.<sup class='cite'><a href='#src-13'>13</a></sup></p>
+  <p>One more distinction matters here. The IPCC’s special report on extreme events (SREX) found that rising <em>economic losses</em> from disasters are driven mainly by increasing exposure of people and property, and that long-term trends in losses adjusted for wealth and population “have not been attributed to climate change,” though a role for climate change “has not been excluded.”<sup class='cite'><a href='#src-14'>14</a></sup> In other words, <b>dollars and deaths tell different stories</b>: we keep building more valuable stuff in harm’s way (so losses grow) while getting better at getting people out of the way (so deaths fall).</p>
+</section>
+
+<section id="migration">
+  <h2>We’re moving toward the heat and away from the cold.</h2>
+  <p>The Census Bureau’s famous map shows the country’s center of population drifting south and west for two centuries.<sup class='cite'><a href='#src-6'>6</a></sup> But an average can’t tell you whether people are moving into danger. So I built my own test. I grouped 3,098 counties (about 98% of the 2020 population) into five equal-population fifths by their average July high temperature (NOAA, 1991–2020), then added up each group’s <b>net domestic migration</b> from July 2020 to July 2025 using Census estimates.<sup class='cite'><a href='#src-5'>5</a>,<a href='#src-4'>4</a></sup> That isolates Americans moving within the country from births, deaths, and immigration.</p>
+  <figure>
+    <p class="ft">Americans are sorting into hotter counties</p>
+    <p class="fs">Net domestic migration, July 2020–July 2025, per 1,000 residents, by county summer heat</p>
+    <div class="legend"><span><i style="background:var(--pos)"></i>Net gain</span><span><i style="background:var(--neg)"></i>Net loss</span></div>
+    <div class="chartbox"><svg class="chart" viewBox="0 0 760 350" role="img" aria-label="Bar chart: net domestic migration 2020-2025 per 1,000 residents by county summer-heat quintile" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+<line x1="56" x2="744" y1="280.0" y2="280.0" class="grid"/>
+<text x="48" y="284.0" class="tick" text-anchor="end">-40</text>
+<line x1="56" x2="744" y1="245.7" y2="245.7" class="grid"/>
+<text x="48" y="249.7" class="tick" text-anchor="end">-30</text>
+<line x1="56" x2="744" y1="211.4" y2="211.4" class="grid"/>
+<text x="48" y="215.4" class="tick" text-anchor="end">-20</text>
+<line x1="56" x2="744" y1="177.1" y2="177.1" class="grid"/>
+<text x="48" y="181.1" class="tick" text-anchor="end">-10</text>
+<line x1="56" x2="744" y1="142.9" y2="142.9" class="grid base"/>
+<text x="48" y="146.9" class="tick" text-anchor="end">0</text>
+<line x1="56" x2="744" y1="108.6" y2="108.6" class="grid"/>
+<text x="48" y="112.6" class="tick" text-anchor="end">+10</text>
+<line x1="56" x2="744" y1="74.3" y2="74.3" class="grid"/>
+<text x="48" y="78.3" class="tick" text-anchor="end">+20</text>
+<line x1="56" x2="744" y1="40.0" y2="40.0" class="grid"/>
+<text x="48" y="44.0" class="tick" text-anchor="end">+30</text>
+<text x="12" y="24" class="axlab">Net domestic migrants per 1,000 residents (Jul 2020–Jul 2025)</text>
+<path d="M84.9,142.9 V151.0 Q84.9,155.0 88.9,155.0 H160.7 Q164.7,155.0 164.7,151.0 V142.9 Z" class="neg" data-tip="Coolest fifth (July avg high 65–83°F): net domestic migration -0.23M people (-3.5 per 1,000)"><title>Coolest fifth (July avg high 65–83°F): net domestic migration -0.23M people (-3.5 per 1,000)</title></path>
+<text x="124.8" y="171.0" class="val" text-anchor="middle">-3.5</text>
+<text x="124.8" y="302" class="tick b" text-anchor="middle">Coolest fifth</text>
+<text x="124.8" y="320" class="tick" text-anchor="middle">65–83°F</text>
+<path d="M222.5,142.9 V230.9 Q222.5,234.9 226.5,234.9 H298.3 Q302.3,234.9 302.3,230.9 V142.9 Z" class="neg" data-tip="Cool fifth (July avg high 83–86°F): net domestic migration -1.79M people (-26.8 per 1,000)"><title>Cool fifth (July avg high 83–86°F): net domestic migration -1.79M people (-26.8 per 1,000)</title></path>
+<text x="262.4" y="250.9" class="val" text-anchor="middle">-26.8</text>
+<text x="262.4" y="302" class="tick b" text-anchor="middle">Cool fifth</text>
+<text x="262.4" y="320" class="tick" text-anchor="middle">83–86°F</text>
+<path d="M360.1,142.9 V177.4 Q360.1,181.4 364.1,181.4 H435.9 Q439.9,181.4 439.9,177.4 V142.9 Z" class="neg" data-tip="Middle fifth (July avg high 86–89°F): net domestic migration -0.74M people (-11.2 per 1,000)"><title>Middle fifth (July avg high 86–89°F): net domestic migration -0.74M people (-11.2 per 1,000)</title></path>
+<text x="400.0" y="197.4" class="val" text-anchor="middle">-11.2</text>
+<text x="400.0" y="302" class="tick b" text-anchor="middle">Middle fifth</text>
+<text x="400.0" y="320" class="tick" text-anchor="middle">86–89°F</text>
+<path d="M497.7,142.9 V71.9 Q497.7,67.9 501.7,67.9 H573.5 Q577.5,67.9 577.5,71.9 V142.9 Z" class="pos" data-tip="Hot fifth (July avg high 89–92°F): net domestic migration +1.38M people (+21.9 per 1,000)"><title>Hot fifth (July avg high 89–92°F): net domestic migration +1.38M people (+21.9 per 1,000)</title></path>
+<text x="537.6" y="61.9" class="val" text-anchor="middle">+21.9</text>
+<text x="537.6" y="302" class="tick b" text-anchor="middle">Hot fifth</text>
+<text x="537.6" y="320" class="tick" text-anchor="middle">89–92°F</text>
+<path d="M635.3,142.9 V68.0 Q635.3,64.0 639.3,64.0 H711.1 Q715.1,64.0 715.1,68.0 V142.9 Z" class="pos" data-tip="Hottest fifth (July avg high 92–107°F): net domestic migration +1.48M people (+23.0 per 1,000)"><title>Hottest fifth (July avg high 92–107°F): net domestic migration +1.48M people (+23.0 per 1,000)</title></path>
+<text x="675.2" y="58.0" class="val" text-anchor="middle">+23.0</text>
+<text x="675.2" y="302" class="tick b" text-anchor="middle">Hottest fifth</text>
+<text x="675.2" y="320" class="tick" text-anchor="middle">92–107°F</text>
+<text x="380.0" y="344" class="tick foot" text-anchor="middle">County groups, each ≈1/5 of 2020 population, ranked by average July high (1991–2020)</text>
+</svg></div>
+    <figcaption>Contiguous U.S.; excludes Connecticut (Census now uses planning regions) and county-equivalents missing from NOAA’s county file. Heat = 1991–2020 average July maximum temperature. Sources: Census Vintage 2025, NOAA nClimDiv.<sup class='cite'><a href='#src-4'>4</a>,<a href='#src-5'>5</a></sup></figcaption>
+    <details><summary>Show the data table</summary><div class="tbl"><table><thead><tr><th>Fifth</th><th>July high</th><th>Counties</th><th>2020 pop</th><th>Net domestic</th><th>Per 1,000</th><th>Int’l migration</th></tr></thead><tbody><tr><td>Coolest</td><td>65–83°F</td><td>718</td><td>65.1M</td><td>-231k</td><td><b>-3.5</b></td><td>+1,131k</td></tr>
+<tr><td>Cool</td><td>83–86°F</td><td>522</td><td>66.6M</td><td>-1,787k</td><td><b>-26.8</b></td><td>+1,848k</td></tr>
+<tr><td>Middle</td><td>86–89°F</td><td>625</td><td>66.0M</td><td>-742k</td><td><b>-11.2</b></td><td>+1,607k</td></tr>
+<tr><td>Hot</td><td>89–92°F</td><td>659</td><td>63.0M</td><td>+1,378k</td><td><b>+21.9</b></td><td>+1,777k</td></tr>
+<tr><td>Hottest</td><td>92–107°F</td><td>574</td><td>64.5M</td><td>+1,484k</td><td><b>+23.0</b></td><td>+1,775k</td></tr></tbody></table></div></details>
+  </figure>
+  <p>The hottest two fifths gained about <b>2.9 million</b> net domestic movers in five years; the cooler three lost about 2.8 million. The top gainers read like a heat map: Collin and Montgomery counties in Texas, Polk and Pasco in Florida, Pinal and Maricopa in Arizona, all with average July highs above 90°F.</p>
+  <p><b>But it depends on how closely you look.</b> Some of the hottest big-city cores <em>lost</em> residents (Dallas County, about −191,000; Miami-Dade, about −271,000), so part of this is people moving from a hot city to its hot suburbs, not into a new climate. And running the same test on winter <em>heating degree days</em> shows the flip side: the mildest-winter fifth gained about 1.3 million movers. People are trading cold exposure for heat exposure.</p>
+  <p><b>What does this do to the “we got safer” story? It complicates it, in an interesting way.</b> Exposure to heat went up, yet per-person storm and weather deaths did not explode, which suggests protection (air conditioning, above all) improved even more than the raw rate shows. And moving south may itself be adaptation: Deschênes and Moretti estimate that moves from the Northeast to the Southwest account for 4–7% of U.S. life-expectancy gains over thirty years, largely by escaping cold.<sup class='cite'><a href='#src-7'>7</a></sup></p>
+</section>
+
+<section id="heat">
+  <h2>Heat: the one line going the wrong way (maybe)</h2>
+  <p>The NWS only started publishing heat deaths in 1986.<sup class='cite'><a href='#src-1'>1</a></sup> When we add them, the picture changes. From the 2000s through the 2010s, reported heat deaths averaged about 115 a year. In 2020–2025 they averaged <b>382 a year</b>, more than tornadoes, floods, and hurricanes combined (230). Cold deaths, by contrast, run around 25–40 a year in the NWS data. So including heat and cold <em>does</em> change the assessment: total weather deaths are no longer clearly falling this decade.</p>
+  <figure>
+    <p class="ft">Heat deaths: two spikes and a recent climb</p>
+    <p class="fs">U.S. heat deaths reported by the National Weather Service, 1986–2025</p>
+    <div class="chartbox"><svg class="chart" viewBox="0 0 760 320" role="img" aria-label="Bar chart: NWS-reported U.S. heat deaths per year, 1986 to 2025" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+<line x1="56" x2="744" y1="280.0" y2="280.0" class="grid base"/>
+<text x="48" y="284.0" class="tick" text-anchor="end">0</text>
+<line x1="56" x2="744" y1="225.5" y2="225.5" class="grid"/>
+<text x="48" y="229.5" class="tick" text-anchor="end">250</text>
+<line x1="56" x2="744" y1="170.9" y2="170.9" class="grid"/>
+<text x="48" y="174.9" class="tick" text-anchor="end">500</text>
+<line x1="56" x2="744" y1="116.4" y2="116.4" class="grid"/>
+<text x="48" y="120.4" class="tick" text-anchor="end">750</text>
+<line x1="56" x2="744" y1="61.8" y2="61.8" class="grid"/>
+<text x="48" y="65.8" class="tick" text-anchor="end">1,000</text>
+<text x="12" y="24" class="axlab">NWS heat deaths per year</text>
+<path d="M58.6,280.0 V275.3 Q58.6,271.3 62.6,271.3 H66.6 Q70.6,271.3 70.6,275.3 V280.0 Z" class="s2" data-tip="1986: 40 heat deaths (NWS)"><title>1986: 40 heat deaths (NWS)</title></path>
+<path d="M75.8,280.0 V275.7 Q75.8,271.7 79.8,271.7 H83.8 Q87.8,271.7 87.8,275.7 V280.0 Z" class="s2" data-tip="1987: 38 heat deaths (NWS)"><title>1987: 38 heat deaths (NWS)</title></path>
+<path d="M93.0,280.0 V275.1 Q93.0,271.1 97.0,271.1 H101.0 Q105.0,271.1 105.0,275.1 V280.0 Z" class="s2" data-tip="1988: 41 heat deaths (NWS)"><title>1988: 41 heat deaths (NWS)</title></path>
+<path d="M110.2,280.0 V280.0 Q110.2,278.7 111.5,278.7 H120.9 Q122.2,278.7 122.2,280.0 V280.0 Z" class="s2" data-tip="1989: 6 heat deaths (NWS)"><title>1989: 6 heat deaths (NWS)</title></path>
+<path d="M127.4,280.0 V277.0 Q127.4,273.0 131.4,273.0 H135.4 Q139.4,273.0 139.4,277.0 V280.0 Z" class="s2" data-tip="1990: 32 heat deaths (NWS)"><title>1990: 32 heat deaths (NWS)</title></path>
+<text x="133.4" y="298" class="tick" text-anchor="middle">1990</text>
+<path d="M144.6,280.0 V276.1 Q144.6,272.1 148.6,272.1 H152.6 Q156.6,272.1 156.6,276.1 V280.0 Z" class="s2" data-tip="1991: 36 heat deaths (NWS)"><title>1991: 36 heat deaths (NWS)</title></path>
+<path d="M161.8,280.0 V280.0 Q161.8,278.3 163.5,278.3 H172.1 Q173.8,278.3 173.8,280.0 V280.0 Z" class="s2" data-tip="1992: 8 heat deaths (NWS)"><title>1992: 8 heat deaths (NWS)</title></path>
+<path d="M179.0,280.0 V279.6 Q179.0,275.6 183.0,275.6 H187.0 Q191.0,275.6 191.0,279.6 V280.0 Z" class="s2" data-tip="1993: 20 heat deaths (NWS)"><title>1993: 20 heat deaths (NWS)</title></path>
+<path d="M196.2,280.0 V277.7 Q196.2,273.7 200.2,273.7 H204.2 Q208.2,273.7 208.2,277.7 V280.0 Z" class="s2" data-tip="1994: 29 heat deaths (NWS)"><title>1994: 29 heat deaths (NWS)</title></path>
+<path d="M213.4,280.0 V61.2 Q213.4,57.2 217.4,57.2 H221.4 Q225.4,57.2 225.4,61.2 V280.0 Z" class="s2" data-tip="1995: 1,021 heat deaths (NWS)"><title>1995: 1,021 heat deaths (NWS)</title></path>
+<text x="219.4" y="298" class="tick" text-anchor="middle">1995</text>
+<text x="231.4" y="67.2" class="note">1995: 1,021 (incl. Chicago heat wave)</text>
+<path d="M230.6,280.0 V276.1 Q230.6,272.1 234.6,272.1 H238.6 Q242.6,272.1 242.6,276.1 V280.0 Z" class="s2" data-tip="1996: 36 heat deaths (NWS)"><title>1996: 36 heat deaths (NWS)</title></path>
+<path d="M247.8,280.0 V266.3 Q247.8,262.3 251.8,262.3 H255.8 Q259.8,262.3 259.8,266.3 V280.0 Z" class="s2" data-tip="1997: 81 heat deaths (NWS)"><title>1997: 81 heat deaths (NWS)</title></path>
+<path d="M265.0,280.0 V246.3 Q265.0,242.3 269.0,242.3 H273.0 Q277.0,242.3 277.0,246.3 V280.0 Z" class="s2" data-tip="1998: 173 heat deaths (NWS)"><title>1998: 173 heat deaths (NWS)</title></path>
+<path d="M282.2,280.0 V174.5 Q282.2,170.5 286.2,170.5 H290.2 Q294.2,170.5 294.2,174.5 V280.0 Z" class="s2" data-tip="1999: 502 heat deaths (NWS)"><title>1999: 502 heat deaths (NWS)</title></path>
+<path d="M299.4,280.0 V249.5 Q299.4,245.5 303.4,245.5 H307.4 Q311.4,245.5 311.4,249.5 V280.0 Z" class="s2" data-tip="2000: 158 heat deaths (NWS)"><title>2000: 158 heat deaths (NWS)</title></path>
+<text x="305.4" y="298" class="tick" text-anchor="middle">2000</text>
+<path d="M316.6,280.0 V247.8 Q316.6,243.8 320.6,243.8 H324.6 Q328.6,243.8 328.6,247.8 V280.0 Z" class="s2" data-tip="2001: 166 heat deaths (NWS)"><title>2001: 166 heat deaths (NWS)</title></path>
+<path d="M333.8,280.0 V247.6 Q333.8,243.6 337.8,243.6 H341.8 Q345.8,243.6 345.8,247.6 V280.0 Z" class="s2" data-tip="2002: 167 heat deaths (NWS)"><title>2002: 167 heat deaths (NWS)</title></path>
+<path d="M351.0,280.0 V276.1 Q351.0,272.1 355.0,272.1 H359.0 Q363.0,272.1 363.0,276.1 V280.0 Z" class="s2" data-tip="2003: 36 heat deaths (NWS)"><title>2003: 36 heat deaths (NWS)</title></path>
+<path d="M368.2,280.0 V280.0 Q368.2,278.7 369.5,278.7 H378.9 Q380.2,278.7 380.2,280.0 V280.0 Z" class="s2" data-tip="2004: 6 heat deaths (NWS)"><title>2004: 6 heat deaths (NWS)</title></path>
+<path d="M385.4,280.0 V249.5 Q385.4,245.5 389.4,245.5 H393.4 Q397.4,245.5 397.4,249.5 V280.0 Z" class="s2" data-tip="2005: 158 heat deaths (NWS)"><title>2005: 158 heat deaths (NWS)</title></path>
+<text x="391.4" y="298" class="tick" text-anchor="middle">2005</text>
+<path d="M402.6,280.0 V228.8 Q402.6,224.8 406.6,224.8 H410.6 Q414.6,224.8 414.6,228.8 V280.0 Z" class="s2" data-tip="2006: 253 heat deaths (NWS)"><title>2006: 253 heat deaths (NWS)</title></path>
+<path d="M419.8,280.0 V261.1 Q419.8,257.1 423.8,257.1 H427.8 Q431.8,257.1 431.8,261.1 V280.0 Z" class="s2" data-tip="2007: 105 heat deaths (NWS)"><title>2007: 105 heat deaths (NWS)</title></path>
+<path d="M437.0,280.0 V268.5 Q437.0,264.5 441.0,264.5 H445.0 Q449.0,264.5 449.0,268.5 V280.0 Z" class="s2" data-tip="2008: 71 heat deaths (NWS)"><title>2008: 71 heat deaths (NWS)</title></path>
+<path d="M454.2,280.0 V274.2 Q454.2,270.2 458.2,270.2 H462.2 Q466.2,270.2 466.2,274.2 V280.0 Z" class="s2" data-tip="2009: 45 heat deaths (NWS)"><title>2009: 45 heat deaths (NWS)</title></path>
+<path d="M471.4,280.0 V253.9 Q471.4,249.9 475.4,249.9 H479.4 Q483.4,249.9 483.4,253.9 V280.0 Z" class="s2" data-tip="2010: 138 heat deaths (NWS)"><title>2010: 138 heat deaths (NWS)</title></path>
+<text x="477.4" y="298" class="tick" text-anchor="middle">2010</text>
+<path d="M488.6,280.0 V239.1 Q488.6,235.1 492.6,235.1 H496.6 Q500.6,235.1 500.6,239.1 V280.0 Z" class="s2" data-tip="2011: 206 heat deaths (NWS)"><title>2011: 206 heat deaths (NWS)</title></path>
+<path d="M505.8,280.0 V250.0 Q505.8,246.0 509.8,246.0 H513.8 Q517.8,246.0 517.8,250.0 V280.0 Z" class="s2" data-tip="2012: 156 heat deaths (NWS)"><title>2012: 156 heat deaths (NWS)</title></path>
+<path d="M523.0,280.0 V263.9 Q523.0,259.9 527.0,259.9 H531.0 Q535.0,259.9 535.0,263.9 V280.0 Z" class="s2" data-tip="2013: 92 heat deaths (NWS)"><title>2013: 92 heat deaths (NWS)</title></path>
+<path d="M540.2,280.0 V279.6 Q540.2,275.6 544.2,275.6 H548.2 Q552.2,275.6 552.2,279.6 V280.0 Z" class="s2" data-tip="2014: 20 heat deaths (NWS)"><title>2014: 20 heat deaths (NWS)</title></path>
+<path d="M557.4,280.0 V274.2 Q557.4,270.2 561.4,270.2 H565.4 Q569.4,270.2 569.4,274.2 V280.0 Z" class="s2" data-tip="2015: 45 heat deaths (NWS)"><title>2015: 45 heat deaths (NWS)</title></path>
+<text x="563.4" y="298" class="tick" text-anchor="middle">2015</text>
+<path d="M574.6,280.0 V263.5 Q574.6,259.5 578.6,259.5 H582.6 Q586.6,259.5 586.6,263.5 V280.0 Z" class="s2" data-tip="2016: 94 heat deaths (NWS)"><title>2016: 94 heat deaths (NWS)</title></path>
+<path d="M591.8,280.0 V260.7 Q591.8,256.7 595.8,256.7 H599.8 Q603.8,256.7 603.8,260.7 V280.0 Z" class="s2" data-tip="2017: 107 heat deaths (NWS)"><title>2017: 107 heat deaths (NWS)</title></path>
+<path d="M609.0,280.0 V260.4 Q609.0,256.4 613.0,256.4 H617.0 Q621.0,256.4 621.0,260.4 V280.0 Z" class="s2" data-tip="2018: 108 heat deaths (NWS)"><title>2018: 108 heat deaths (NWS)</title></path>
+<path d="M626.2,280.0 V243.2 Q626.2,239.2 630.2,239.2 H634.2 Q638.2,239.2 638.2,243.2 V280.0 Z" class="s2" data-tip="2019: 187 heat deaths (NWS)"><title>2019: 187 heat deaths (NWS)</title></path>
+<path d="M643.4,280.0 V207.6 Q643.4,203.6 647.4,203.6 H651.4 Q655.4,203.6 655.4,207.6 V280.0 Z" class="s2" data-tip="2020: 350 heat deaths (NWS)"><title>2020: 350 heat deaths (NWS)</title></path>
+<text x="649.4" y="298" class="tick" text-anchor="middle">2020</text>
+<path d="M660.6,280.0 V202.2 Q660.6,198.2 664.6,198.2 H668.6 Q672.6,198.2 672.6,202.2 V280.0 Z" class="s2" data-tip="2021: 375 heat deaths (NWS)"><title>2021: 375 heat deaths (NWS)</title></path>
+<path d="M677.8,280.0 V200.4 Q677.8,196.4 681.8,196.4 H685.8 Q689.8,196.4 689.8,200.4 V280.0 Z" class="s2" data-tip="2022: 383 heat deaths (NWS)"><title>2022: 383 heat deaths (NWS)</title></path>
+<path d="M695.0,280.0 V162.9 Q695.0,158.9 699.0,158.9 H703.0 Q707.0,158.9 707.0,162.9 V280.0 Z" class="s2" data-tip="2023: 555 heat deaths (NWS)"><title>2023: 555 heat deaths (NWS)</title></path>
+<text x="691.0" y="150.9" class="note" text-anchor="end">2023: 555</text>
+<path d="M712.2,280.0 V168.6 Q712.2,164.6 716.2,164.6 H720.2 Q724.2,164.6 724.2,168.6 V280.0 Z" class="s2" data-tip="2024: 529 heat deaths (NWS)"><title>2024: 529 heat deaths (NWS)</title></path>
+<path d="M729.4,280.0 V262.2 Q729.4,258.2 733.4,258.2 H737.4 Q741.4,258.2 741.4,262.2 V280.0 Z" class="s2" data-tip="2025: 100 heat deaths (NWS) — preliminary"><title>2025: 100 heat deaths (NWS) — preliminary</title></path>
+<text x="735.4" y="298" class="tick" text-anchor="middle">2025</text>
+</svg></div>
+    <figcaption>2025 (100) is preliminary. Source: NWS 81-Year List.<sup class='cite'><a href='#src-1'>1</a></sup></figcaption>
+  </figure>
+  <p>Before we panic, look at who is counting. <b>In 2023, Maricopa County, Arizona alone recorded 645 heat deaths</b>,<sup class='cite'><a href='#src-10'>10</a></sup> more than the NWS’s 555 for the entire country. CDC death certificates, meanwhile, listed heat on 2,325 deaths that year, up 117% from 1999.<sup class='cite'><a href='#src-9'>9</a></sup> Places like Phoenix have gotten much better at <em>finding</em> heat deaths, so part of the recent climb is almost certainly better measurement, not only more death. Both can be true.</p>
+  <h3>What 1995 teaches us</h3>
+  <p>The giant 1995 spike (1,021) is mostly one event: Chicago’s July heat wave, which caused at least 700 excess deaths.<sup class='cite'><a href='#src-11'>11</a></sup> A CDC study of those deaths found the risk was not simply “it was hot.” It was being confined to bed, living alone, not leaving home each day, and living on a top floor; people with working air conditioners had about a third of the risk.<sup class='cite'><a href='#src-11'>11</a></sup> When a strong heat wave hit Chicago again in 1999, after the city had rolled out interventions aimed at the elderly, deaths were far lower (at least 80), and a working air conditioner was again the strongest protection.<sup class='cite'><a href='#src-12'>12</a></sup> <b>Heat deaths are a hazard multiplied by exposure and vulnerability:</b> isolation, housing, age, and whether you can afford to cool your home. Those are things we can change, which is good news for a warming future.</p>
+</section>
+
+<section id="counting">
+  <h2>Two numbers, one word: why 555 and 120,000 are both “temperature deaths”</h2>
+  <p>Now for the number that should stop you. A 2025 study by Marshall Burke and co-authors, using decades of data from 30 countries, estimates that sub-optimal temperatures cause about <b>5% of all U.S. deaths and about 12% in the EU</b>, around 120,000 American deaths a year.<sup class='cite'><a href='#src-8'>8</a></sup> That is roughly 180 times the NWS’s ten-year average for <em>all</em> weather deaths. Did the Weather Service miss 99% of them? No. They are measuring different things.</p>
+  <figure>
+    <p class="ft">Four ways to count a “temperature death”</p>
+    <p class="fs">Annual U.S. deaths, log scale</p>
+    <div class="legend"><span><i style="background:var(--series-2)"></i>Heat deaths, counted case by case</span><span><i style="background:var(--series-1)"></i>Heat + cold, statistically attributed</span></div>
+    <div class="chartbox"><svg class="chart" viewBox="0 0 760 300" role="img" aria-label="Log-scale bar chart comparing four ways of counting U.S. temperature deaths" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+<line x1="16.0" x2="16.0" y1="24" y2="260" class="grid"/>
+<text x="16.0" y="278" class="tick" text-anchor="middle">100</text>
+<line x1="214.2" x2="214.2" y1="24" y2="260" class="grid"/>
+<text x="214.2" y="278" class="tick" text-anchor="middle">1,000</text>
+<line x1="412.4" x2="412.4" y1="24" y2="260" class="grid"/>
+<text x="412.4" y="278" class="tick" text-anchor="middle">10,000</text>
+<line x1="610.5" x2="610.5" y1="24" y2="260" class="grid"/>
+<text x="610.5" y="278" class="tick" text-anchor="middle">100,000</text>
+<text x="380.0" y="296" class="tick" text-anchor="middle">Deaths per year (log scale: each gridline is 10× the last)</text>
+<path d="M16.0,48.8 H159.5 Q163.5,48.8 163.5,52.8 V64.8 Q163.5,68.8 159.5,68.8 H16.0 Z" class="s2" data-tip="NWS count: heat deaths, whole U.S., 2023: 555"><title>NWS count: heat deaths, whole U.S., 2023: 555</title></path>
+<text x="16.0" y="42.8" class="tick b">NWS count: heat deaths, whole U.S., 2023</text>
+<text x="171.5" y="65.8" class="val">555</text>
+<path d="M16.0,107.8 H172.4 Q176.4,107.8 176.4,111.8 V123.8 Q176.4,127.8 172.4,127.8 H16.0 Z" class="s2" data-tip="Maricopa County, AZ alone: heat deaths, 2023: 645"><title>Maricopa County, AZ alone: heat deaths, 2023: 645</title></path>
+<text x="16.0" y="101.8" class="tick b">Maricopa County, AZ alone: heat deaths, 2023</text>
+<text x="184.4" y="124.8" class="val">645</text>
+<path d="M16.0,166.8 H282.8 Q286.8,166.8 286.8,170.8 V182.8 Q286.8,186.8 282.8,186.8 H16.0 Z" class="s2" data-tip="CDC death certificates: heat-related, U.S., 2023: 2,325"><title>CDC death certificates: heat-related, U.S., 2023: 2,325</title></path>
+<text x="16.0" y="160.8" class="tick b">CDC death certificates: heat-related, U.S., 2023</text>
+<text x="294.8" y="183.8" class="val">2,325</text>
+<path d="M16.0,225.8 H622.2 Q626.2,225.8 626.2,229.8 V241.8 Q626.2,245.8 622.2,245.8 H16.0 Z" class="s1" data-tip="Burke et al.: all temperature-attributable (heat + cold), U.S., per year: 120,000 (about)"><title>Burke et al.: all temperature-attributable (heat + cold), U.S., per year: 120,000 (about)</title></path>
+<text x="16.0" y="219.8" class="tick b">Burke et al.: all temperature-attributable (heat + cold), U.S., per year</text>
+<text x="634.2" y="242.8" class="val">~120,000</text>
+</svg></div>
+    <figcaption>Sources: NWS<sup class='cite'><a href='#src-1'>1</a></sup>; Maricopa County<sup class='cite'><a href='#src-10'>10</a></sup>; Howard et al. (CDC WONDER)<sup class='cite'><a href='#src-9'>9</a></sup>; Burke et al.<sup class='cite'><a href='#src-8'>8</a></sup></figcaption>
+  </figure>
+  <div class="callout">
+    <h3>Counted deaths vs. attributable deaths: read this before the next headline</h3>
+    <ul>
+      <li><b>NWS / CDC counts</b> are individual deaths that a forecaster, coroner, or doctor tied to the weather: heatstroke, hypothermia, a collapsed house.</li>
+      <li><b>Burke’s “temperature-attributable” deaths</b> are statistical. The authors compare death rates on every day to what they would have been at the temperature where mortality is lowest (about 20–25°C, or 68–77°F). The excess is “attributed” to temperature. Much of it shows up as cardiovascular and respiratory deaths, concentrated among older people, on death certificates that never mention temperature. Coded temperature deaths are just 0.058% of U.S. deaths from 1968 to 2019, nearly two orders of magnitude below the attributable estimate.<sup class='cite'><a href='#src-8'>8</a></sup></li>
+      <li><b>Cold does most of the killing.</b> Burke finds cold deaths outnumber heat deaths by at least 5 to 1, and moderately cold days (5–10°C, or 41–50°F), not rare extremes, cause the largest share.<sup class='cite'><a href='#src-8'>8</a></sup></li>
+      <li><b>Some heat deaths are “brought forward.”</b> Heat causes an immediate spike followed by a return to normal (or a dip), consistent with deaths moved up by days; cold’s effects build over weeks.<sup class='cite'><a href='#src-8'>8</a></sup></li>
+    </ul>
+    <p style="margin:12px 0 0"><b>Four questions for any temperature headline:</b> Was it counted or modeled? Heat, cold, or both? Compared to what baseline temperature? And how many were deaths that would have happened days later anyway?</p>
+  </div>
+  <p>Scale it up the way the assignment asks. If 5–12% of the world’s 61.7 million annual deaths are temperature-related,<sup class='cite'><a href='#src-20'>20</a></sup> that is <b>3.1 to 7.4 million deaths a year</b>, in the same range as a global study that put the figure at about 5.1 million (9.4% of deaths, mostly cold).<sup class='cite'><a href='#src-18'>18</a></sup> For the U.S., 5% of the 3.07 million deaths in 2024 is about 150,000.<sup class='cite'><a href='#src-19'>19</a></sup> These are reasonable estimates of a real statistical burden. They are misleading only when someone sets them next to NWS counts as if they were the same kind of number.</p>
+</section>
+
+<section id="economics">
+  <h2>The economics: shrink the hazard, or get out of its way?</h2>
+  <p>Risk is what happens when a <b>hazard</b> meets <b>exposure</b>. We can’t turn down a hurricane, but we can move what sits in its path. Neither approach wins automatically; the right one is whichever buys the most safety per dollar at the margin.</p>
+  <h3>How expensive is “moving to higher ground”?</h3>
+  <p>William Nordhaus’s hurricane work (as summarized in our course) puts about 3% of the U.S. capital stock below 10 meters of elevation in Atlantic hurricane zones, with roughly $600 billion of vulnerable structures.<sup class='cite'><a href='#src-15'>15</a></sup> Suppose we don’t bulldoze anything and just rebuild somewhere safer as buildings wear out.</p>
+  <div class="calc">
+    <div><span>Vulnerable structures, $600B in pre-2020 dollars × CPI (2019→2025)</span><span>≈ $756 billion</span></div>
+    <div><span>Assumed lifetime of large structures</span><span>50 years → replace 1/50 = 2% a year</span></div>
+    <div><span>Value replaced each year</span><span>≈ $15.1 billion</span></div>
+    <div><span>Extra cost to rebuild somewhere safer (land, infrastructure)</span><span>25% of value</span></div>
+    <div><span>Annual cost of relocation</span><span>≈ $3.8 billion ≈ 0.012% of 2025 GDP ($30.8T)</span></div>
+  </div>
+  <p>Even my pessimistic version (30-year lives, relocation costing 100% of the building) comes to about $25 billion, or 0.08% of GDP; an optimistic one (80-year lives, 10% premium) is under $1 billion.<sup class='cite'><a href='#src-17'>17</a></sup> Nordhaus himself estimated that warming would add about 0.08% of GDP to average annual U.S. hurricane damages.<sup class='cite'><a href='#src-15'>15</a></sup> On paper, gradual retreat is cheap.</p>
+  <p><b>So why don’t we do it?</b> Because the people deciding don’t face the full cost. Coastal views and beaches are worth a lot to the people who live there; when disaster aid and subsidized insurance cover part of the damage, the private cost of staying falls below the social cost; and local governments depend on the coastal property-tax base. Nordhaus found that, historically, damages per storm have actually been drifting <em>up</em>: “negative adaptation.”<sup class='cite'><a href='#src-16'>16</a></sup> Cheap solutions don’t happen by themselves when incentives point the other way.</p>
+  <h3>What actually works against temperature deaths?</h3>
+  <p>Burke’s review finds that many popular programs (heat alerts, cooling centers, urban greening) lack rigorous evidence, and that U.S. heat warnings are rarely issued on days below 30°C, even though most heat deaths happen below that threshold.<sup class='cite'><a href='#src-8'>8</a></sup> The best-evidenced interventions often aren’t climate policy at all: the 1960s–70s rollout of U.S. community health centers cut heat-related mortality 14%; health insurance for low-income households in Mexico and Colombia cut the effect of moderate cold by at least half; and California’s outdoor-worker heat rules (shade, water, breaks) cut heat injuries in targeted industries by 75–90%.<sup class='cite'><a href='#src-8'>8</a></sup></p>
+  <p>Take air conditioning, the obvious fix for Europe’s heat problem. It is strongly linked to lower heat mortality (Portuguese hospitals with AC had 40% lower mortality in the 2003 heat wave), but owning an AC is not the same as running one: low-income households run theirs less on hot days, and Burke notes higher energy costs in the EU as one candidate explanation for its greater sensitivity.<sup class='cite'><a href='#src-8'>8</a></sup> An economist’s questions: <b>at what cost</b> (units, electricity, peak grid capacity, emissions), <b>compared to what</b> (cheaper clinics and insulation that also fight cold, the bigger killer), <b>who decides</b> (renters vs. landlords, households facing energy prices), and <b>how do we know</b> (the studies are mostly correlations, not experiments). AC probably saves lives on the hottest days. It is not, by itself, a plan.</p>
+</section>
+
+<section id="wait">
+  <h2>But wait…</h2>
+  <div class="wait">
+    <h3>1. Some of the trend might be the ruler, not the reality.</h3>
+    <p>The storm decline partly depends on how Storm Data files deaths (hurricane = wind only), and the recent heat climb partly reflects better surveillance. Any trend built from administrative counts inherits changes in how people count.</p>
+    <h3>2. “Three times safer” is an average, and averages hide people.</h3>
+    <p>553 people died in tornadoes in 2011. A falling rate doesn’t make that acceptable, and it doesn’t tell us whether the next dollar of protection is worth spending. That is a marginal question, not an average one.</p>
+    <h3>3. Adaptation isn’t guaranteed to keep working.</h3>
+    <p>Burke finds the U.S. temperature burden was the same share of deaths in the 2010s as in the 1980s, partly because the population is aging.<sup class='cite'><a href='#src-8'>8</a></sup> Millions of people moving to Phoenix and Houston are betting on the power grid. A 1995-style heat wave during a long blackout is a risk the data haven’t tested yet.</p>
+    <h3>4. My own “hold on”:</h3>
+    <p>Burke’s “cold kills more” finding is powerful, but winter is also flu season, and people crowd indoors when it’s cold. Separating the effect of a cold <em>day</em> from everything else that comes with winter is exactly the kind of inference that deserves more evidence, especially before anyone uses it to argue that warming is harmless. It doesn’t overturn my conclusion; it makes me hold it a bit more loosely.</p>
+  </div>
+  <p class="pull">A big number is not a verdict. Neither is a small one.</p>
+  <p>The data say Americans have gotten much better at surviving storms, even while moving toward more heat. They also say the most common temperature deaths are quiet ones: an older person on a cold January morning, not a headline heat dome. The useful question isn’t whether weather is getting “deadlier.” It is where the next dollar of protection saves the most lives. Sometimes that is a seawall. More often it is a working air conditioner, a neighbor who knocks on the door, and a clinic that’s open on an ordinary cold Tuesday.</p>
+</section>
+
+<section id="methods">
+  <h2>Methods, data &amp; downloads</h2>
+  <p style="font-size:15px">Decades are calendar decades starting in 1940; the last group is 2020–2025 (six years, 2025 preliminary). Storm deaths = NWS tornado + flood + hurricane columns. Population = BEA midperiod resident population, averaged within each decade. Migration = sum of Census “domestic migration” components for July 2020–July 2025 (Vintage 2025), by county, grouped into population-weighted fifths of the 1991–2020 average July maximum temperature from NOAA nClimDiv. Relocation calculation uses the course’s Nordhaus figures, CPI-U annual averages, and 2025 nominal GDP. Downloads: <a href="data/nws_fatalities_population_1940_2025.csv">annual NWS + population data</a> · <a href="data/decade_summary.csv">decade summary</a> · <a href="data/migration_by_heat_quintile.csv">migration by heat fifth</a> · <a href="weather-mortality-poster.pdf">poster PDF</a>.</p>
+</section>
+
+<section id="sources">
+  <h2>Sources</h2>
+  <ol class="sources"><li id='src-1'>National Weather Service, <em>81-Year List of Severe Weather Fatalities, 1940–2025</em> (2025 preliminary). <a href='https://www.weather.gov/media/hazstat/81year_2025.pdf'>www.weather.gov/media/hazstat/81year_2025.pdf</a></li>
+<li id='src-2'>National Weather Service, <em>Weather Related Fatality and Injury Statistics</em> (definitions & caveats). <a href='https://www.weather.gov/hazstat/'>www.weather.gov/hazstat/</a></li>
+<li id='src-3'>U.S. Bureau of Economic Analysis, Population (midperiod), series B230RC0A052NBEA, via FRED. <a href='https://fred.stlouisfed.org/series/B230RC0A052NBEA'>fred.stlouisfed.org/series/B230RC0A052NBEA</a></li>
+<li id='src-4'>U.S. Census Bureau, County Population Totals and Components of Change, Vintage 2025 (co-est2025-alldata). <a href='https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/counties/totals/co-est2025-alldata.csv'>www2.census.gov/programs-surveys/popest/datasets/2020-2025/counties/totals/co-est2025-alldata.csv</a></li>
+<li id='src-5'>NOAA NCEI, nClimDiv county maximum temperature &amp; heating degree days (1991–2020 averages). <a href='https://www.ncei.noaa.gov/pub/data/cirs/climdiv/'>www.ncei.noaa.gov/pub/data/cirs/climdiv/</a></li>
+<li id='src-6'>U.S. Census Bureau, Mean Center of Population, 1790–2020. <a href='https://www.census.gov/library/visualizations/2020/geo/center-of-population-1790-2020.html'>www.census.gov/library/visualizations/2020/geo/center-of-population-1790-2020.html</a></li>
+<li id='src-7'>Deschênes &amp; Moretti (2009), “Extreme Weather Events, Mortality, and Migration,” <em>Review of Economics and Statistics</em> 91(4). <a href='https://direct.mit.edu/rest/article-abstract/91/4/659/57810/Extreme-Weather-Events-Mortality-and-Migration'>direct.mit.edu/rest/article-abstract/91/4/659/57810/Extreme-Weather-Events-Mortality-and-Migration</a></li>
+<li id='src-8'>Burke et al. (2025), “Understanding and Addressing Temperature Impacts on Mortality,” NBER Working Paper 34313. <a href='https://www.nber.org/papers/w34313'>www.nber.org/papers/w34313</a></li>
+<li id='src-9'>Howard, Androne, Alcover &amp; Santos-Lozada (2024), “Trends of Heat-Related Deaths in the US, 1999–2023,” <em>JAMA</em>. <a href='https://pubmed.ncbi.nlm.nih.gov/39186311/'>pubmed.ncbi.nlm.nih.gov/39186311/</a></li>
+<li id='src-10'>Maricopa County Dept. of Public Health (2025), “2024 Shows First Decline in Heat Deaths in a Decade” (2023: 645 deaths). <a href='https://www.maricopa.gov/CivicAlerts.asp?AID=3222'>www.maricopa.gov/CivicAlerts.asp?AID=3222</a></li>
+<li id='src-11'>Semenza et al. (1996), “Heat-Related Deaths during the July 1995 Heat Wave in Chicago,” <em>NEJM</em> 335(2). <a href='https://www.nejm.org/doi/full/10.1056/NEJM199607113350203'>www.nejm.org/doi/full/10.1056/NEJM199607113350203</a></li>
+<li id='src-12'>Naughton et al. (2002), “Heat-related mortality during a 1999 heat wave in Chicago,” <em>Am. J. Preventive Medicine</em> 22(4). <a href='https://pubmed.ncbi.nlm.nih.gov/11988377/'>pubmed.ncbi.nlm.nih.gov/11988377/</a></li>
+<li id='src-13'>Barreca, Clay, Deschênes, Greenstone &amp; Shapiro (2016), “Adapting to Climate Change,” <em>Journal of Political Economy</em> 124(1). <a href='https://www.nber.org/papers/w18692'>www.nber.org/papers/w18692</a></li>
+<li id='src-14'>IPCC (2012), <em>Managing the Risks of Extreme Events and Disasters to Advance Climate Change Adaptation</em> (SREX), Summary for Policymakers. <a href='https://www.ipcc.ch/site/assets/uploads/2018/03/SREX_FD_SPM_final-2.pdf'>www.ipcc.ch/site/assets/uploads/2018/03/SREX_FD_SPM_final-2.pdf</a></li>
+<li id='src-15'>Nordhaus (2010), “The Economics of Hurricanes and Implications of Global Warming,” <em>Climate Change Economics</em> 1(1). <a href='https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1618685'>papers.ssrn.com/sol3/papers.cfm?abstract_id=1618685</a></li>
+<li id='src-16'>Nordhaus (2006), “The Economics of Hurricanes in the United States,” NBER Working Paper 12813. <a href='https://www.nber.org/papers/w12813'>www.nber.org/papers/w12813</a></li>
+<li id='src-17'>BEA, Gross Domestic Product (annual, GDPA) and BLS CPI-U (CPIAUCSL), via FRED. <a href='https://fred.stlouisfed.org/series/GDPA'>fred.stlouisfed.org/series/GDPA</a></li>
+<li id='src-18'>Zhao et al. (2021), “Global, regional, and national burden of mortality associated with non-optimal ambient temperatures,” <em>Lancet Planetary Health</em>. <a href='https://doi.org/10.1016/S2542-5196(21)00081-4'>doi.org/10.1016/S2542-5196(21)00081-4</a></li>
+<li id='src-19'>CDC/NCHS Data Brief No. 548, <em>Mortality in the United States, 2024</em> (3,072,666 deaths). <a href='https://www.cdc.gov/nchs/products/databriefs/db548.htm'>www.cdc.gov/nchs/products/databriefs/db548.htm</a></li>
+<li id='src-20'>UN World Population Prospects 2024 via Our World in Data, “Number of deaths” (61.7 million worldwide, 2023). <a href='https://ourworldindata.org/grapher/number-of-deaths'>ourworldindata.org/grapher/number-of-deaths</a></li>
+<li id='src-21'>Ballester et al. (2023), “Heat-related mortality in Europe during the summer of 2022,” <em>Nature Medicine</em>. <a href='https://doi.org/10.1038/s41591-023-02419-z'>doi.org/10.1038/s41591-023-02419-z</a></li></ol>
+</section>
+</main>
+<footer>Omer Okutan · Econ 238: Environmental Economics · University of Rochester · Fall 2026. Research help, calculation checks, and layout assistance from an AI tool (Claude); every figure was checked against the linked source. Deaths only. Dollar damages are a story for another week.</footer>
+</div>
+<script>
+(function(){
+  var tip=document.getElementById('tip');
+  function show(e){var t=e.target.closest('[data-tip]');if(!t){tip.style.opacity=0;return;}
+    tip.textContent=t.getAttribute('data-tip');tip.style.opacity=1;
+    var x=(e.touches?e.touches[0].clientX:e.clientX),y=(e.touches?e.touches[0].clientY:e.clientY);
+    var w=tip.offsetWidth;tip.style.left=Math.max(8,Math.min(window.innerWidth-w-8,x+12))+'px';tip.style.top=(y+14)+'px';}
+  document.addEventListener('mousemove',show);document.addEventListener('touchstart',show,{passive:true});
+  document.querySelectorAll('svg title').forEach(function(t){t.remove();});
+  var btn=document.getElementById('themeBtn'),root=document.documentElement;
+  try{var s=localStorage.getItem('theme');if(s)root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')?root.getAttribute('data-theme')==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var n=dark?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('theme',n);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
