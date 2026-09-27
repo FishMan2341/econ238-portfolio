@@ -5,3 +5,4 @@ Environmental Economics, Fall 2026, University of Rochester
 ## Assignments
 
 - [800,000 Gallons Sounds Terrifying: Five Questions to Ask Before You Panic](https://fishman2341.github.io/econ238-portfolio/week-one/data-centers-water/)
+- [More Americans, Fewer Storm Deaths Per Person: What 86 Years of U.S. Weather Data Say About Adaptation](https://fishman2341.github.io/econ238-portfolio/week-four/weather-mortality/)
