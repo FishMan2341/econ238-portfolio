@@ -20,8 +20,3 @@ exhibit,item,value,unit,notes,source
 4,US data centers 2028 high,580,TWh,12%,LBNL Dec 2024
 4,Global data centers 2024,415,TWh,1.5% of world electricity; ~945 TWh by 2030,IEA Energy and AI 2025
 4,All ChatGPT text prompts per year,0.31,TWh,2.5e9 prompts/day x 0.34 Wh x 365,TechCrunch Jul 2025 + Altman (derived)
-4,STAMP data center at full load,4.38,TWh,500 MW x 8760 h,Investigative Post Mar 2026 (derived)
-5,STAMP capacity,500,MW,,Investigative Post Mar 2026
-5,STAMP proposed investment,19.46,billion USD,Project Double Reed,The Indypendent Jun 2026
-5,STAMP requested tax breaks,1.46,billion USD,,Investigative Post Mar 2026
-5,STAMP permanent jobs,125,jobs,~$11.7M subsidy per job,Investigative Post Mar 2026
