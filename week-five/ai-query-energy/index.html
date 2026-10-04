@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Much Power Is an AI Query? | SHOW ME</title>
+<meta name="description" content="One AI prompt uses about as much electricity as a Google search. One proposed data center near Rochester would use as much as ~420,000 homes. Both are true. An interactive exhibit.">
+<meta property="og:title" content="How Much Power Is an AI Query?">
+<meta property="og:description" content="Tiny per prompt. Enormous per data center. Both are true.">
+<meta property="og:image" content="cover.png">
+<style>
+  :root{
+    --bg:#f5f4fb; --card:#fff; --ink:#17142b; --muted:#5d5a75; --line:#e6e3f2;
+    --ai:#7c3aed; --ai2:#a855f7; --pink:#ec4899; --cyan:#06b6d4; --every:#0891b2; --amber:#f59e0b; --orange:#ea580c; --lime:#65a30d; --navy:#0f0b29; --red:#e11d48;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-x:hidden}
+  .wrap{max-width:980px;margin:0 auto;padding:0 16px}
+
+  header.hero{position:relative;overflow:hidden;color:#fff;padding:56px 0 44px;
+    background:radial-gradient(900px 480px at 90% -5%,rgba(236,72,153,.75) 0%,transparent 60%),radial-gradient(900px 520px at -5% 105%,rgba(6,182,212,.7) 0%,transparent 60%),linear-gradient(135deg,#0f0b29 0%,#2e1065 55%,#0f0b29 100%);
+    background-size:140% 140%;animation:drift 18s ease-in-out infinite alternate}
+  @keyframes drift{0%{background-position:0% 0%}100%{background-position:100% 100%}}
+  #spark{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.8}
+  .hero .wrap{position:relative;z-index:1}
+  .tag{display:inline-block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:5px 12px;border-radius:999px;margin-bottom:16px}
+  h1{font-size:clamp(34px,7vw,62px);line-height:1.03;margin:0 0 14px;letter-spacing:-.02em}
+  h1 .g{background:linear-gradient(90deg,#f0abfc,#fde047,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.lede{font-size:clamp(17px,2.4vw,21px);max-width:740px;margin:0;color:#e7e3fb}
+  .live{margin-top:20px;display:inline-grid;grid-template-columns:auto auto;gap:4px 18px;align-items:center;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px 16px}
+  .live .lbl{grid-column:1/-1;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:#d9d3f7;display:flex;align-items:center;gap:8px}
+  .live b{font-size:clamp(22px,4vw,30px);font-variant-numeric:tabular-nums;line-height:1.1}
+  .live b.p{color:#f0abfc} .live b.e{color:#fde047}
+  .live small{display:block;font-size:12px;color:#cfc8f5}
+  .dot{width:9px;height:9px;border-radius:50%;background:#f472b6;animation:pulse 1.6s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(244,114,182,.7)}70%{box-shadow:0 0 0 10px rgba(244,114,182,0)}100%{box-shadow:0 0 0 0 rgba(244,114,182,0)}}
+  .big3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+  .big3 div{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:16px;transition:transform .25s}
+  .big3 div:hover{transform:translateY(-3px)}
+  .big3 b{display:block;font-size:clamp(24px,4vw,34px);line-height:1.1;font-variant-numeric:tabular-nums}
+  .big3 div:nth-child(1) b{color:#f0abfc}.big3 div:nth-child(2) b{color:#fde047}.big3 div:nth-child(3) b{color:#67e8f9}
+  .big3 span{font-size:13px;color:#d9d3f7}
+  .big3 span.count{font-size:inherit;color:inherit}
+  nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  nav.toc a{color:#fff;text-decoration:none;font-size:13px;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);transition:background .2s}
+  nav.toc a:hover{background:rgba(255,255,255,.24)}
+
+  section{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 24px;margin:24px 0;box-shadow:0 1px 2px rgba(23,20,43,.04),0 10px 30px -18px rgba(46,16,101,.35);overflow:hidden}
+  section::before{content:"";position:absolute;left:0;top:0;right:0;height:5px;background:var(--accent,linear-gradient(90deg,var(--ai),var(--pink)))}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  h2{font-size:clamp(22px,3.6vw,28px);line-height:1.22;margin:0 0 8px;letter-spacing:-.01em}
+  h3{font-size:17px;margin:18px 0 6px}
+  .kicker{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--kc,var(--ai));padding:4px 10px;border-radius:999px;margin-bottom:10px}
+  .sub{color:var(--muted);margin:0 0 14px}
+  .chart{position:relative;width:100%}
+  .h300{height:300px}.h320{height:320px}.h540{height:540px}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .btn{font:inherit;font-size:13px;border:1px solid var(--line);background:#efedf8;color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer;transition:all .18s}
+  .btn:hover{transform:translateY(-1px);border-color:#cfc9e6}
+  .btn.on{background:var(--ai);color:#fff;border-color:var(--ai)}
+  .btn.play{background:linear-gradient(90deg,var(--ai),var(--pink));color:#fff;border:0;font-weight:700;box-shadow:0 6px 18px -8px rgba(124,58,237,.8)}
+  .sep{width:1px;background:var(--line);margin:0 4px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin:6px 0}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .callout{border-radius:12px;padding:14px 16px;margin:16px 0;font-size:15px;background:linear-gradient(135deg,#fff8e6,#fff0cc);border:1px solid #fde4a1}
+  .callout.purple{background:linear-gradient(135deg,#f5efff,#fae8ff);border-color:#e3d0fb}
+  .callout.cyan{background:linear-gradient(135deg,#ecfeff,#e0f2fe);border-color:#bae6fd}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+  /* estimates */
+  .est{display:grid;gap:10px;margin:8px 0}
+  .erow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,2fr);gap:14px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:12px;transition:transform .2s,box-shadow .2s}
+  .erow:hover{transform:translateX(3px);box-shadow:0 8px 20px -14px rgba(46,16,101,.5)}
+  .erow .who b{display:block}
+  .erow .who span{font-size:12.5px;color:var(--muted)}
+  .ebar{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .ebar .track{flex:1;height:12px;border-radius:99px;background:#efedf8;overflow:hidden}
+  .ebar .fill{height:100%;width:0;border-radius:99px;transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+  .ebar .v{font-weight:800;font-variant-numeric:tabular-nums;min-width:58px;text-align:right}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:1px}
+  .b-co{background:#fae8ff;color:#a21caf}.b-ind{background:#e0f2fe;color:#0369a1}.b-old{background:#fee2e2;color:#b91c1c}
+
+  /* calculator */
+  .presets .btn{font-size:12.5px}
+  .calc{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 22px;margin:12px 0}
+  .calc label{font-size:14px;display:block}
+  .calc label span{float:right;font-weight:800;color:var(--ai)}
+  input[type=range]{width:100%;accent-color:var(--ai);height:28px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+  .stat{border-radius:14px;padding:12px 14px;color:#fff}
+  .stat b{display:block;font-size:26px;line-height:1.15;font-variant-numeric:tabular-nums}
+  .stat span{font-size:12.5px;opacity:.93}
+  .s1{background:linear-gradient(135deg,#6d28d9,#a855f7)}.s2{background:linear-gradient(135deg,#db2777,#f472b6)}.s3{background:linear-gradient(135deg,#0e7490,#22d3ee)}.s4{background:linear-gradient(135deg,#c2410c,#f59e0b)}
+  .calcGrid{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:center}
+  .meter{margin:6px 0 4px}
+  .meter .track{height:22px;border-radius:99px;background:#efedf8;position:relative;overflow:hidden}
+  .meter .fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#a855f7,#ec4899);transition:width .5s ease;min-width:4px}
+  .meter .cap{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:4px}
+
+  /* scale up */
+  .scaleUp{border-radius:16px;padding:18px;background:linear-gradient(135deg,#1e1b4b,#4c1d95);color:#fff;margin:16px 0}
+  .scaleUp h3{margin:0 0 4px;color:#fff}
+  .scaleUp .sub{color:#d9d3f7}
+  .scaleUp input[type=range]{accent-color:#f472b6}
+  .su{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+  .su div{background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px}
+  .su b{display:block;font-size:22px;font-variant-numeric:tabular-nums;color:#fde047}
+  .su span{font-size:12.5px;color:#ddd6fe}
+  .bigN{font-size:clamp(22px,4vw,30px);font-weight:800;color:#f0abfc;font-variant-numeric:tabular-nums}
+
+  /* stamp */
+  .tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:12px 0}
+  .tile{border-radius:14px;padding:12px;color:#fff;text-align:left}
+  .tile b{display:block;font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+  .tile span{font-size:12px;opacity:.93}
+  .tile span.count{font-size:inherit;opacity:1}
+  .t1{background:linear-gradient(135deg,#c2410c,#f59e0b)}.t2{background:linear-gradient(135deg,#7c3aed,#ec4899)}.t3{background:linear-gradient(135deg,#0e7490,#06b6d4)}.t4{background:linear-gradient(135deg,#be123c,#fb7185)}.t5{background:linear-gradient(135deg,#3f6212,#84cc16)}
+  .timeline{list-style:none;margin:14px 0 0;padding:0 0 0 18px;border-left:3px solid var(--line)}
+  .timeline li{position:relative;margin:0 0 14px;padding-left:12px}
+  .timeline li::before{content:"";position:absolute;left:-27px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--c,var(--ai));box-shadow:0 0 0 4px #fff}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:10px 0}
+  .card{border-radius:14px;padding:16px;border:1px solid var(--line);background:#fff;transition:transform .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 12px 26px -16px rgba(46,16,101,.5)}
+  .card .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;margin-bottom:8px}
+  .card b{display:block;margin-bottom:4px}
+  .card p{margin:0;color:var(--muted);font-size:14.5px}
+
+  ul.plain li{margin:6px 0}
+  .src{font-size:13.5px;color:var(--muted)} .src li{margin:5px 0}
+  a{color:var(--ai)}
+  .note{font-size:12.5px;color:var(--muted);margin-top:6px}
+  footer{color:var(--muted);font-size:13px;padding:10px 0 40px}
+  @media (max-width:760px){
+    .grid2,.calc,.calcGrid,.erow{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .big3,.su{grid-template-columns:1fr}
+    .tiles{grid-template-columns:repeat(2,1fr)}
+    section{padding:20px 14px}
+    .h540{height:600px}
+    .live{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    header.hero{animation:none} .dot{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <canvas id="spark" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <span class="tag">SHOW ME · My own topic · Energy &amp; AI</span>
+    <h1>How Much Power Is <span class="g">an AI Query?</span></h1>
+    <p class="lede">One chatbot prompt uses about as much electricity as a Google search did in 2009. One proposed AI data center about 35 miles from Rochester would draw as much power as about 420,000 homes. Both statements are true. This exhibit shows how they fit together.</p>
+    <div class="live" aria-live="off">
+      <div class="lbl"><span class="dot"></span>Since you opened this page, worldwide</div>
+      <div><b class="p" id="liveP">0</b><small>ChatGPT prompts sent (at 2.5 billion/day)</small></div>
+      <div><b class="e" id="liveE">0</b><small>kWh used by those prompts (at 0.34 Wh each)</small></div>
+    </div>
+    <div class="big3">
+      <div><b>≈<span class="count" data-to="0.3" data-dec="1">0</span> Wh</b><span>A typical text prompt, per Google's and OpenAI's 2025 disclosures. That's about 1 second of a microwave.</span></div>
+      <div><b><span class="count" data-to="10">0</span>x</b><span>How far apart the "famous" 2023 estimate (3 Wh) and the 2025 company figures are</span></div>
+      <div><b><span class="count" data-to="500">0</span> MW</b><span>Proposed STAMP data center, Genesee County, NY. At full load, about 4.4 TWh a year.</span></div>
+    </div>
+    <nav class="toc"><a href="#ladderSec">Energy ladder</a><a href="#estSec">Why numbers disagree</a><a href="#calcSec">▶ Your AI day</a><a href="#aggSec">Prompt → grid</a><a href="#stampSec">STAMP</a><a href="#takeSec">So what?</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- LADDER -->
+<section id="ladderSec" class="reveal" style="--accent:linear-gradient(90deg,#7c3aed,#06b6d4)">
+  <span class="kicker">Exhibit 1 · The energy ladder</span>
+  <h2>An AI prompt next to everything else you do</h2>
+  <p class="sub">Electricity per activity, in watt-hours (Wh), on a log scale where each gridline is 10x. Purple bars are AI tasks; teal bars are everyday activities. Switch units to see everything measured in "ChatGPT prompts."</p>
+  <div class="controls">
+    <span id="unitBtns" style="display:contents">
+      <button class="btn on" data-u="wh">Watt-hours</button>
+      <button class="btn" data-u="q">In ChatGPT prompts</button>
+    </span>
+    <span class="sep"></span>
+    <span id="filtBtns" style="display:contents">
+      <button class="btn on" data-f="all">All</button>
+      <button class="btn" data-f="ai">AI only</button>
+      <button class="btn" data-f="every">Everyday only</button>
+    </span>
+    <span class="sep"></span>
+    <button class="btn play" id="climb">↺ Replay the climb</button>
+  </div>
+  <div class="legend"><span><i style="background:linear-gradient(90deg,#7c3aed,#ec4899)"></i>AI task</span><span><i style="background:#d8b4fe"></i>AI, older/high estimate</span><span><i style="background:linear-gradient(90deg,#0891b2,#22d3ee)"></i>Everyday activity</span></div>
+  <div class="chart h540"><canvas id="ladder" aria-label="Log-scale bar chart of energy per activity"></canvas></div>
+  <p class="note">Hover or tap a bar for its source. Microwave (1,000 W), LED bulb (10 W) and gas-car (25 mpg × 33.7 kWh per gallon of gasoline) values are simple arithmetic from the stated assumptions. AI values cover running the model (inference), not training it.</p>
+  <div class="callout purple"><b>What jumps out:</b> a text prompt is in the same range as a web search. Generating an image is a few prompts. A long-document prompt is closer to half an hour of streaming. Five seconds of AI video is about a third of a mile of driving. "AI" is not one number. <i>What</i> you ask for matters more than whether you used AI.</div>
+</section>
+
+<!-- WHY ESTIMATES DIFFER -->
+<section id="estSec" class="reveal" style="--accent:linear-gradient(90deg,#e11d48,#7c3aed)">
+  <span class="kicker" style="--kc:var(--red)">Exhibit 2 · Why the numbers disagree</span>
+  <h2>The "3 Wh per ChatGPT query" figure everyone quotes is about 10x too high for today's typical prompt</h2>
+  <p class="sub">Each bar is drawn to the same linear scale (0–3 Wh). The long-document case runs off the scale, which is the point.</p>
+  <div class="est" id="est">
+    <div class="erow"><div class="who"><b>de Vries (widely cited)<span class="badge b-old">2023 · old</span></b><span>Older A100 chips; assumed about 2,000-token answers; peak power draw</span></div><div><div class="ebar"><div class="track"><div class="fill" data-w="100" style="background:linear-gradient(90deg,#fb7185,#e11d48)"></div></div><span class="v">≈3 Wh</span></div></div></div>
+    <div class="erow"><div class="who"><b>Epoch AI, GPT-4o<span class="badge b-ind">independent</span></b><span>Feb 2025 · newer H100 chips; about 500-token answers; realistic utilization</span></div><div><div class="ebar"><div class="track"><div class="fill" data-w="10" style="background:linear-gradient(90deg,#22d3ee,#0891b2)"></div></div><span class="v">≈0.3 Wh</span></div></div></div>
+    <div class="erow"><div class="who"><b>OpenAI (Sam Altman), "average query"<span class="badge b-co">company</span></b><span>Jun 2025 · blog post; doesn't say what's included or which model</span></div><div><div class="ebar"><div class="track"><div class="fill" data-w="11.3" style="background:linear-gradient(90deg,#c084fc,#7c3aed)"></div></div><span class="v">0.34 Wh</span></div></div></div>
+    <div class="erow"><div class="who"><b>Google, median Gemini text prompt<span class="badge b-co">company</span></b><span>Aug 2025 · includes idle machines, host CPU/RAM, and cooling. Counting only the AI chips gives 0.10 Wh</span></div><div><div class="ebar"><div class="track"><div class="fill" data-w="8" style="background:linear-gradient(90deg,#f0abfc,#c026d3)"></div></div><span class="v">0.24 Wh</span></div></div></div>
+    <div class="erow"><div class="who"><b>Epoch AI, 100,000-token input<span class="badge b-ind">independent</span></b><span>Same model, but it first has to read a book-length input (e.g., a long PDF)</span></div><div><div class="ebar"><div class="track"><div class="fill" data-w="100" style="background:repeating-linear-gradient(45deg,#f59e0b 0 10px,#ea580c 10px 20px)"></div></div><span class="v">≈40 Wh →</span></div></div></div>
+  </div>
+  <div class="callout"><b>Read this critically:</b> the two lowest numbers come from the companies themselves and haven't been independently audited. Google also reports that its per-prompt energy fell 33x in one year (May 2024 to May 2025). That shows how fast these figures go stale and why older citations mislead. Model size matters too: MIT Technology Review measured an open-source 405-billion-parameter model at about 1.9 Wh per answer, roughly 60x a small 8-billion-parameter model.</div>
+</section>
+
+<!-- CALCULATOR -->
+<section id="calcSec" class="reveal" style="--accent:linear-gradient(90deg,#ec4899,#f59e0b)">
+  <span class="kicker" style="--kc:var(--pink)">Exhibit 3 · Try it on yourself</span>
+  <h2>Your AI day, in electricity</h2>
+  <p class="sub">Pick a profile or set your own sliders. Choose which text-prompt estimate you believe. The result is compared with the average U.S. home's daily electricity use (865 kWh/month ≈ 28,450 Wh/day, EIA 2024).</p>
+  <div class="controls presets" id="presets">
+    <button class="btn" data-p="3,0,0,0">Casual (3 prompts)</button>
+    <button class="btn on" data-p="20,1,2,0">Student</button>
+    <button class="btn" data-p="80,5,10,0">Power user</button>
+    <button class="btn" data-p="40,2,30,5">Content creator</button>
+  </div>
+  <div class="controls" id="estBtns">
+    <button class="btn on" data-e="0.3">2025 disclosures (0.3 Wh/prompt)</button>
+    <button class="btn" data-e="3">2023 estimate (3 Wh/prompt)</button>
+  </div>
+  <div class="calc">
+    <label>Text prompts per day <span id="vText">20</span><input type="range" id="text" min="0" max="200" value="20"></label>
+    <label>Long-document prompts (≈100k tokens) <span id="vLong">1</span><input type="range" id="long" min="0" max="20" value="1"></label>
+    <label>AI images generated <span id="vImg">2</span><input type="range" id="img" min="0" max="50" value="2"></label>
+    <label>5-second AI videos generated <span id="vVid">0</span><input type="range" id="vid" min="0" max="10" value="0"></label>
+  </div>
+  <div class="stats">
+    <div class="stat s1"><b id="oWh">0</b><span>Wh per day from AI</span></div>
+    <div class="stat s2"><b id="oHome">0</b><span>of an average U.S. home's daily electricity</span></div>
+    <div class="stat s3"><b id="oTv">0</b><span>minutes of streaming-equivalent (77 Wh/hr)</span></div>
+    <div class="stat s4"><b id="oMi">0</b><span>miles in a 25-mpg gas car, energy-equivalent</span></div>
+  </div>
+  <div class="calcGrid">
+    <div class="chart" style="height:260px"><canvas id="calcChart" aria-label="Breakdown of daily AI electricity use"></canvas></div>
+    <div>
+      <div class="meter"><b>Your AI day vs. one home's day</b>
+        <div class="track" style="margin-top:6px"><div class="fill" id="meterFill"></div></div>
+        <div class="cap"><span>0</span><span>28,454 Wh (average U.S. home)</span></div>
+      </div>
+      <p class="note">The bar is drawn to scale. For most profiles it's a sliver. Add a few AI videos and watch it move.</p>
+    </div>
+  </div>
+  <p class="note">Per-task values: text 0.3 or 3 Wh; long document 40 Wh; image 0.63 Wh; 5-second video ≈ 444 Wh. Video is MIT Technology Review's "≈700x an image" applied to its 2,282-joule image measurement. These are open-source models measured on specific hardware; commercial models may differ.</p>
+</section>
+
+<!-- AGGREGATE -->
+<section id="aggSec" class="reveal" style="--accent:linear-gradient(90deg,#06b6d4,#7c3aed,#ea580c)">
+  <span class="kicker" style="--kc:var(--every)">Exhibit 4 · Tiny × billions</span>
+  <h2>From one prompt to the power grid</h2>
+
+  <div class="scaleUp">
+    <h3>Scale it up: drag to multiply prompts</h3>
+    <p class="sub">Each step multiplies the number of prompts by 10, at 0.34 Wh each.</p>
+    <div class="bigN"><span id="suN">1</span> prompts</div>
+    <input type="range" id="suR" min="0" max="13.11" step="0.01" value="9.4" aria-label="Number of prompts, log scale">
+    <div class="su">
+      <div><b id="suE">0</b><span>electricity</span></div>
+      <div><b id="suH">0</b><span>average U.S. homes powered for a day</span></div>
+      <div><b id="suS">0</b><span>of one year of the STAMP data center at full load</span></div>
+    </div>
+    <p class="note" style="color:#c4b5fd">The slider starts at 2.5 billion (one day of ChatGPT). Drag it all the way right to fill one year of STAMP: about 13 trillion prompts.</p>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <h3>U.S. data center electricity (TWh/year)</h3>
+      <div class="chart h300"><canvas id="usdc" aria-label="US data center electricity 2014-2028"></canvas></div>
+      <p class="note">Lawrence Berkeley National Lab (Dec 2024). 2023 = 176 TWh, 4.4% of U.S. electricity. The 2028 bars show the low and high projections (325–580 TWh; 6.7–12%). Globally, the IEA estimates 415 TWh in 2024, about 1.5% of world electricity, roughly doubling by 2030.</p>
+    </div>
+    <div>
+      <h3>Same units, very different sizes (TWh/year)</h3>
+      <div class="chart h300"><canvas id="scale" aria-label="Log scale comparison of ChatGPT prompts, STAMP, US data centers"></canvas></div>
+      <p class="note">Log scale. "All ChatGPT prompts" = 2.5 billion prompts/day (OpenAI, July 2025) × 0.34 Wh × 365 ≈ 0.31 TWh, an average draw of about 35 MW. STAMP at full load = 500 MW × 8,760 hours = 4.38 TWh.</p>
+    </div>
+  </div>
+  <div class="callout cyan"><b>The puzzle this reveals:</b> by these numbers, every ChatGPT text prompt on Earth uses about <b>one-fourteenth</b> of what the single proposed STAMP data center could draw, and less than 0.2% of U.S. data center electricity. So per-prompt chat is not where most of the power goes. The rest is training new models, longer "reasoning" and agent tasks, image and video, enterprise and cloud computing, and capacity built ahead of demand. When someone says "your chatbot habit is using up the grid," the numbers don't support it. When someone says "AI's energy use is trivial," the data center build-out doesn't support that either.</div>
+</section>
+
+<!-- LOCAL -->
+<section id="stampSec" class="reveal" style="--accent:linear-gradient(90deg,#ea580c,#f59e0b,#65a30d)">
+  <span class="kicker" style="--kc:var(--orange)">Exhibit 5 · Close to home</span>
+  <h2>The STAMP data center: what 500 MW means for Western New York</h2>
+  <p class="sub">Stream U.S. Data Centers proposed a three-building campus at the STAMP industrial park in the Town of Alabama, Genesee County, about halfway between Buffalo and Rochester. It sits next to the Tonawanda Seneca Nation.</p>
+  <div class="tiles">
+    <div class="tile t1"><b><span class="count" data-to="500">0</span> MW</b><span>planned capacity, more than 80% of the power available at STAMP</span></div>
+    <div class="tile t2"><b><span class="count" data-to="4.38" data-dec="2">0</span> TWh</b><span>per year at full load (500 MW × 8,760 h)</span></div>
+    <div class="tile t3"><b>≈<span class="count" data-to="422000" data-sep="1">0</span></b><span>average U.S. homes' worth (my calculation: 4.38 TWh ÷ 10,380 kWh)</span></div>
+    <div class="tile t4"><b>$<span class="count" data-to="1.46" data-dec="2">0</span>B</b><span>in requested tax breaks, on a $19.5B project ("Project Double Reed")</span></div>
+    <div class="tile t5"><b><span class="count" data-to="125">0</span> jobs</b><span>permanent, ≈ $11.7 million in subsidies per job</span></div>
+  </div>
+  <h3>Where it stands (as of mid-2026)</h3>
+  <ul class="timeline">
+    <li style="--c:var(--amber)"><b>2025:</b> The Tonawanda Seneca Nation and the Sierra Club sued over environmental review. The county economic development agency rescinded an earlier approval, and Stream re-proposed the project.</li>
+    <li style="--c:var(--red)"><b>July 14, 2026:</b> A new lawsuit challenges the 2012 zoning agreement that underpins all of STAMP.</li>
+    <li style="--c:var(--ai)"><b>July 15, 2026:</b> Governor Hochul ordered a statewide pause of up to one year on new large data center approvals while the state studies impacts. She also proposed ending data center tax subsidies. The project's future is uncertain.</li>
+  </ul>
+  <div class="callout"><b>The economics question:</b> the per-prompt numbers above are small private costs. The real policy questions are about the facility: who pays for new grid capacity, what the local spillovers are (land, runoff, noise, light, effects on the Nation's adjacent lands), and whether $1.46 billion in public subsidy for 125 jobs is a good trade. Those are classic externality and public-finance questions, and none of them shows up in "Wh per query."</div>
+</section>
+
+<!-- TAKEAWAYS -->
+<section id="takeSec" class="reveal" style="--accent:linear-gradient(90deg,#7c3aed,#ec4899,#f59e0b,#06b6d4,#65a30d)">
+  <span class="kicker">So what?</span>
+  <h2>What this shows, and what it doesn't</h2>
+  <div class="cards">
+    <div class="card"><div class="n" style="background:var(--ai)">1</div><b>Per prompt, text AI is small.</b><p>Roughly a web search, or a second of a microwave, by current disclosures.</p></div>
+    <div class="card"><div class="n" style="background:var(--pink)">2</div><b>"AI" is not one number.</b><p>Long documents, big models, images and especially video can cost 100x to 1,000x+ a simple prompt.</p></div>
+    <div class="card"><div class="n" style="background:var(--red)">3</div><b>Old numbers stick around.</b><p>The 2023 3 Wh estimate still circulates even though efficiency improved about 10x. Check the date on any energy claim.</p></div>
+    <div class="card"><div class="n" style="background:var(--every)">4</div><b>In aggregate, AI is big, and growing fast.</b><p>U.S. data centers may go from 4.4% to as much as 12% of national electricity by 2028. A single proposed facility near Rochester would match hundreds of thousands of homes.</p></div>
+    <div class="card"><div class="n" style="background:var(--orange)">5</div><b>The policy fight is local.</b><p>It's about specific facilities, grids, subsidies and neighbors, not individual users' prompts.</p></div>
+  </div>
+  <p class="sub"><b>Not claimed here:</b> that AI's environmental footprint is negligible, or that it's catastrophic. Training energy, water, carbon intensity of the local grid, and hardware manufacturing are left out, and each could be its own exhibit.</p>
+</section>
+
+<!-- METHOD -->
+<section class="reveal" style="--accent:linear-gradient(90deg,#64748b,#94a3b8)">
+  <span class="kicker" style="--kc:#475569">How this was made</span>
+  <h2>Methods, AI use, and how to extend this</h2>
+  <h3>What I asked the AI (Claude) to do</h3>
+  <ul class="plain">
+    <li>Find every published per-prompt energy estimate, with dates and assumptions, and explain why they differ. I pushed it to separate company-reported from independent numbers.</li>
+    <li>Find comparable energy figures for everyday activities from primary sources (IEA, EIA, Google), and for the U.S. and global data center totals (LBNL, IEA).</li>
+    <li>Pull reporting on the STAMP project's size, subsidies, jobs and legal status as of mid-2026.</li>
+    <li>Do the unit conversions, write the calculator, and build the charts (Chart.js). Then I asked "does the aggregate math actually add up?" That's where the ChatGPT-vs-STAMP comparison came from.</li>
+  </ul>
+  <h3>Computations (all reproducible)</h3>
+  <ul class="plain">
+    <li>Joules to Wh: divide by 3,600 (e.g., 2,282 J image = 0.63 Wh).</li>
+    <li>All ChatGPT prompts: 2.5×10<sup>9</sup>/day × 0.34 Wh × 365 = 0.31 TWh/yr; ÷ 8,760 h ≈ 35 MW average. The live counter at the top uses 2.5×10<sup>9</sup> ÷ 86,400 ≈ 28,900 prompts per second.</li>
+    <li>STAMP: 500 MW × 8,760 h = 4.38 TWh/yr (upper bound; real facilities run below 100%). ÷ 10,380 kWh per home ≈ 422,000 homes.</li>
+    <li>Car: 33.7 kWh per gallon (EPA's MPGe convention) ÷ 25 mpg = 1.35 kWh per mile.</li>
+  </ul>
+  <h3>The next questions someone could ask</h3>
+  <ul class="plain">
+    <li>Add training: how many prompts does it take to "pay off" the energy used to train a model?</li>
+    <li>Convert to carbon using the actual NYISO/Western NY grid mix instead of a national average. New York's upstate grid is mostly hydro and nuclear.</li>
+    <li>Do the same ladder for water (Google reports 0.26 mL per median Gemini prompt).</li>
+    <li>Compare STAMP's subsidy per job with other Western NY incentive deals.</li>
+  </ul>
+  <p>Data used in the charts: <a href="data.csv">data.csv</a></p>
+</section>
+
+<section class="reveal" style="--accent:linear-gradient(90deg,#94a3b8,#cbd5e1)">
+  <span class="kicker" style="--kc:#64748b">Sources</span>
+  <ol class="src">
+    <li>Google Cloud (Aug 2025), "Measuring the environmental impact of AI inference." <a href="https://cloud.google.com/blog/products/infrastructure/measuring-the-environmental-impact-of-ai-inference">cloud.google.com</a></li>
+    <li>Epoch AI (Feb 2025), "How much energy does ChatGPT use?" <a href="https://epoch.ai/gradient-updates/how-much-energy-does-chatgpt-use">epoch.ai</a></li>
+    <li>Altman, S. (Jun 2025), "The Gentle Singularity," via D. Mytton's analysis. <a href="https://davidmytton.blog/chatgpt-energy-usage-is-0-34-wh-per-query/">davidmytton.blog</a></li>
+    <li>MIT Technology Review (May 2025) AI energy report, as summarized by S. Willison. <a href="https://simonwillison.net/2025/May/20/ai-energy-footprint/">simonwillison.net</a></li>
+    <li>TechCrunch (Jul 2025), "ChatGPT users send 2.5 billion prompts a day." <a href="https://techcrunch.com/2025/07/21/chatgpt-users-send-2-5-billion-prompts-a-day/">techcrunch.com</a></li>
+    <li>Google (2009) energy-per-search figure, via Atlantic Council. <a href="https://www.atlanticcouncil.org/blogs/new-atlanticist/bloggers-beware-the-carbon-footprint-of-a-google-search">atlanticcouncil.org</a></li>
+    <li>IEA (2020), "The carbon footprint of streaming video: fact-checking the headlines." <a href="https://www.iea.org/commentaries/the-carbon-footprint-of-streaming-video-fact-checking-the-headlines">iea.org</a></li>
+    <li>U.S. EIA (2025), residential electricity per customer, 2024. <a href="https://www.eia.gov/todayinEnergy/detail.php?id=65244">eia.gov</a></li>
+    <li>Lawrence Berkeley National Lab (Dec 2024) U.S. data center energy report, via Mercom. <a href="https://www.mercomindia.com/us-data-center-electricity-demand-could-triple-by-2028-berkeley-lab">mercomindia.com</a></li>
+    <li>IEA (2025), <i>Energy and AI</i>, Executive Summary. <a href="https://www.iea.org/reports/energy-and-ai/executive-summary">iea.org</a></li>
+    <li>Investigative Post (Mar 2026), "Subsidies for STAMP data center among largest ever." <a href="https://investigativepost.org/2026/03/18/subsidies-for-stamp-data-center-among-largest-ever/">investigativepost.org</a></li>
+    <li>The Indypendent (Jun 2026), "Western New York Resists Mega-Data Center Plan." <a href="https://indypendent.org/2026/06/western-new-york-resists-mega-data-center-plan/">indypendent.org</a></li>
+    <li>Investigative Post (Jul 2026), "Future of STAMP data center uncertain due to Hochul order, lawsuit." <a href="https://investigativepost.org/2026/07/15/future-of-stamp-data-center-now-uncertain/">investigativepost.org</a></li>
+  </ol>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">SHOW ME exhibit · My own topic · by <a href="https://github.com/FishMan2341">@FishMan2341</a> · ECON 238 Environmental Economics, University of Rochester, Fall 2026. Built with Chart.js. Research and code assisted by Claude (Anthropic); all sources linked above.</div>
+</footer>
+
+<script src="chart.umd.min.js"></script>
+<script>
+(function(){
+  var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var C={ai:'#7c3aed',aiSoft:'#d8b4fe',every:'#0891b2',amber:'#f59e0b',orange:'#ea580c',navy:'#1e1b4b',grid:'#eeecf6',muted:'#5d5a75',red:'#e11d48',pink:'#ec4899'};
+  Chart.defaults.font.family=getComputedStyle(document.body).fontFamily;
+  Chart.defaults.color=C.muted;
+  if (REDUCED) Chart.defaults.animation=false;
+  var Q=0.34;
+
+  function fmt(v){ if(v>=1000) return Math.round(v).toLocaleString(); if(v>=10) return (+v.toPrecision(3)).toString(); return (+v.toPrecision(2)).toString(); }
+  function logTick(v){ var l=Math.log10(v); if(Math.abs(l-Math.round(l))>1e-6) return ''; return v>=1? Number(v).toLocaleString() : String(+v.toPrecision(1)); }
+  function logGrid(ctx){ var v=ctx.tick&&ctx.tick.value; if(!v) return 'transparent'; var l=Math.log10(v); return Math.abs(l-Math.round(l))<1e-6? C.grid:'transparent'; }
+  function onVisible(el, fn, th){ if(!('IntersectionObserver' in window)){ fn(); return; }
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ io.disconnect(); fn(); } }); },{threshold:th||.25}); io.observe(el); }
+  function countUp(el){
+    var to=parseFloat(el.dataset.to), dec=+(el.dataset.dec||0), sep=el.dataset.sep, dur=1500, t0=null;
+    function f(v){ return sep? Math.round(v).toLocaleString() : v.toFixed(dec); }
+    if(REDUCED){ el.textContent=f(to); return; }
+    function step(ts){ if(!t0) t0=ts; var p=Math.min(1,(ts-t0)/dur), e=1-Math.pow(1-p,3); el.textContent=f(to*e); if(p<1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  document.querySelectorAll('.reveal').forEach(function(s){ onVisible(s,function(){ s.classList.add('in'); },.12); });
+  document.querySelectorAll('.count').forEach(function(c){ onVisible(c,function(){ countUp(c); }); });
+  setTimeout(function(){ document.querySelectorAll('.reveal').forEach(function(s){ s.classList.add('in'); }); }, 4000);
+  function grad(ctx, a, b, len){ var g=ctx.createLinearGradient(0,0,0,len||300); g.addColorStop(0,a); g.addColorStop(1,b); return g; }
+
+  // ---------- Hero: live counter + rising sparks ----------
+  var t0=performance.now(), pEl=document.getElementById('liveP'), eEl=document.getElementById('liveE');
+  function tick(){ var s=(performance.now()-t0)/1000, n=s*2.5e9/86400; pEl.textContent=Math.floor(n).toLocaleString(); eEl.textContent=(n*Q/1000).toFixed(1); }
+  setInterval(tick, 100); tick();
+  (function(){
+    var cv=document.getElementById('spark'); if(!cv||!cv.getContext||REDUCED) return;
+    var ctx=cv.getContext('2d'),W,H,dpr=window.devicePixelRatio||1,ps=[],running=true;
+    function size(){W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);} size(); window.addEventListener('resize',size);
+    var cols=['#f0abfc','#fde047','#67e8f9','#c4b5fd'];
+    for(var i=0;i<70;i++) ps.push({x:Math.random(),y:Math.random(),v:.02+Math.random()*.06,r:.8+Math.random()*2.2,c:cols[i%4],w:Math.random()*6.28});
+    if('IntersectionObserver' in window) new IntersectionObserver(function(es){running=es[0].isIntersecting; if(running) requestAnimationFrame(draw);}).observe(cv);
+    var last=0;
+    function draw(ts){ if(!running) return; var dt=Math.min(50,ts-(last||ts))/1000; last=ts; ctx.clearRect(0,0,W,H);
+      ps.forEach(function(p){ p.y-=p.v*dt; p.w+=dt*2; if(p.y<-.05){p.y=1.05;p.x=Math.random();}
+        var x=(p.x+Math.sin(p.w)*.004)*W, y=p.y*H; ctx.beginPath(); ctx.arc(x,y,p.r,0,6.283); ctx.fillStyle=p.c; ctx.globalAlpha=.55; ctx.shadowColor=p.c; ctx.shadowBlur=8; ctx.fill(); });
+      ctx.globalAlpha=1; ctx.shadowBlur=0; requestAnimationFrame(draw); }
+    requestAnimationFrame(draw);
+  })();
+
+  // ---------- Ladder ----------
+  var items=[
+    ['Small AI model answer (Llama 3.1 8B)',0.032,'ai','MIT Technology Review 2025: 114 J'],
+    ['Gemini median text prompt',0.24,'ai','Google, Aug 2025 (full-system boundary)'],
+    ['Google search (2009)',0.3,'every','Google 2009: 0.0003 kWh'],
+    ['ChatGPT average query',0.34,'ai','Sam Altman, Jun 2025'],
+    ['AI image (Stable Diffusion 3)',0.63,'ai','MIT Technology Review 2025: 2,282 J'],
+    ['Large AI model answer (Llama 3.1 405B)',1.86,'ai','MIT Technology Review 2025: 6,706 J'],
+    ['ChatGPT query, 2023 estimate',3,'aiold','de Vries 2023 (now considered ~10x high)'],
+    ['LED bulb, 1 hour',10,'every','10 W × 1 h'],
+    ['Microwave, 1 minute',16.7,'every','1,000 W × 1 min'],
+    ['AI prompt with a 100k-token document',40,'ai','Epoch AI, Feb 2025'],
+    ['Streaming video, 1 hour',77,'every','IEA 2020 (2019 data), incl. device + network'],
+    ['5-second AI video',444,'ai','≈700× an AI image (MIT Technology Review 2025)'],
+    ['Driving 1 mile (25 mpg gas car)',1348,'every','33.7 kWh/gal ÷ 25 mpg'],
+    ['Average U.S. home, 1 day',28454,'every','EIA 2024: 865 kWh/month']
+  ];
+  var unit='wh', filt='all', ladder=null, shown=items;
+  function ladderColors(ch){ var ctx=ch.ctx, a=ch.chartArea||{left:0,right:800};
+    var gA=ctx.createLinearGradient(a.left,0,a.right,0); gA.addColorStop(0,'#7c3aed'); gA.addColorStop(1,'#ec4899');
+    var gE=ctx.createLinearGradient(a.left,0,a.right,0); gE.addColorStop(0,'#0891b2'); gE.addColorStop(1,'#22d3ee');
+    return shown.map(function(i){ return i[2]==='ai'?gA:(i[2]==='aiold'?C.aiSoft:gE); }); }
+  function ladderData(){ return shown.map(function(i){return unit==='wh'?i[1]:i[1]/Q;}); }
+  function buildLadder(){
+    if(ladder) ladder.destroy();
+    shown=items.filter(function(i){ return filt==='all' || (filt==='ai'? i[2]!=='every' : i[2]==='every'); });
+    ladder=new Chart(document.getElementById('ladder'),{
+      type:'bar',
+      data:{labels:shown.map(function(i){return i[0];}), datasets:[{data:ladderData(), backgroundColor:function(c){ var ch=c.chart, a=ch.chartArea, it=shown[c.dataIndex]; if(!it) return '#7c3aed'; if(it[2]==='aiold') return C.aiSoft; if(!a) return it[2]==='ai'?'#7c3aed':'#0891b2'; var g=ch.ctx.createLinearGradient(a.left,0,a.right,0); if(it[2]==='ai'){g.addColorStop(0,'#7c3aed');g.addColorStop(1,'#ec4899');} else {g.addColorStop(0,'#0891b2');g.addColorStop(1,'#22d3ee');} return g; }, borderRadius:6, barPercentage:.8}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+        animation:{duration:900,easing:'easeOutCubic',delay:function(c){return c.type==='data'&&c.mode==='default'? c.dataIndex*120:0;}},
+        plugins:{legend:{display:false},
+          tooltip:{callbacks:{label:function(c){var it=shown[c.dataIndex]; var v=unit==='wh'?fmt(it[1])+' Wh':fmt(it[1]/Q)+' ChatGPT prompts'; return [v,'Source: '+it[3]];}}}},
+        scales:{x:{type:'logarithmic',min:0.01,max:unit==='wh'?100000:1000000,title:{display:true,text:unit==='wh'?'Watt-hours (log scale)':'Equivalent number of ChatGPT prompts at 0.34 Wh (log scale)'},ticks:{callback:logTick,autoSkip:false,maxRotation:0},grid:{color:logGrid}},
+                y:{grid:{display:false},ticks:{font:{size:12},autoSkip:false}}}},
+      plugins:[{id:'vals',afterDatasetsDraw:function(ch){var ctx=ch.ctx,m=ch.getDatasetMeta(0);ctx.save();ctx.font='600 11.5px '+Chart.defaults.font.family;ctx.textBaseline='middle';
+        m.data.forEach(function(b,i){var raw=ch.data.datasets[0].data[i];var t=unit==='wh'?fmt(raw)+' Wh':fmt(raw)+(Math.abs(raw-1)<0.01?' prompt':' prompts');var x=b.x+6;var w=ctx.measureText(t).width;if(x+w>ch.chartArea.right){x=b.x-6-w;ctx.fillStyle='#fff';}else ctx.fillStyle='#17142b';ctx.fillText(t,x,b.y);});ctx.restore();}}]
+    });
+  }
+  onVisible(document.getElementById('ladder'), buildLadder, .2);
+  document.getElementById('climb').addEventListener('click', buildLadder);
+  document.querySelectorAll('#unitBtns button').forEach(function(b){b.addEventListener('click',function(){
+    unit=b.dataset.u; document.querySelectorAll('#unitBtns button').forEach(function(x){x.classList.toggle('on',x===b);});
+    if(!ladder) return; ladder.data.datasets[0].data=ladderData(); var s=ladder.options.scales.x;
+    s.max=unit==='wh'?100000:1000000; s.title.text=unit==='wh'?'Watt-hours (log scale)':'Equivalent number of ChatGPT prompts at 0.34 Wh (log scale)'; ladder.update(); });});
+  document.querySelectorAll('#filtBtns button').forEach(function(b){b.addEventListener('click',function(){
+    filt=b.dataset.f; document.querySelectorAll('#filtBtns button').forEach(function(x){x.classList.toggle('on',x===b);}); buildLadder(); });});
+
+  // ---------- Estimate bars ----------
+  onVisible(document.getElementById('est'), function(){ document.querySelectorAll('#est .fill').forEach(function(f,i){ setTimeout(function(){ f.style.width=f.dataset.w+'%'; }, REDUCED?0:i*180); }); });
+
+  // ---------- Calculator ----------
+  var est=0.3, per={long:40,img:0.634,vid:444}, HOME=28454;
+  var text=document.getElementById('text'),long=document.getElementById('long'),img=document.getElementById('img'),vid=document.getElementById('vid');
+  var calcChart=new Chart(document.getElementById('calcChart'),{
+    type:'doughnut',
+    data:{labels:['Text prompts','Long documents','Images','Videos'],datasets:[{data:[1,1,1,1],backgroundColor:['#7c3aed','#ec4899','#06b6d4','#f59e0b'],borderColor:'#fff',borderWidth:3,hoverOffset:10}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',animation:{duration:600},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,usePointStyle:true}},tooltip:{callbacks:{label:function(c){return c.label+': '+fmt(c.raw)+' Wh';}}}}},
+    plugins:[{id:'center',afterDraw:function(ch){var a=ch.chartArea,ctx=ch.ctx,tot=ch.data.datasets[0].data.reduce(function(x,y){return x+y;},0);ctx.save();ctx.textAlign='center';ctx.fillStyle='#17142b';ctx.font='800 20px '+Chart.defaults.font.family;ctx.fillText(fmt(tot)+' Wh',(a.left+a.right)/2,(a.top+a.bottom)/2+2);ctx.font='12px '+Chart.defaults.font.family;ctx.fillStyle='#5d5a75';ctx.fillText('per day',(a.left+a.right)/2,(a.top+a.bottom)/2+20);ctx.restore();}}]
+  });
+  function calc(){
+    var t=+text.value,l=+long.value,i=+img.value,v=+vid.value;
+    document.getElementById('vText').textContent=t;document.getElementById('vLong').textContent=l;document.getElementById('vImg').textContent=i;document.getElementById('vVid').textContent=v;
+    var parts=[t*est,l*per.long,i*per.img,v*per.vid], tot=parts.reduce(function(a,b){return a+b;},0);
+    document.getElementById('oWh').textContent=fmt(tot);
+    var pct=tot/HOME*100; document.getElementById('oHome').textContent=(pct<0.1?pct.toFixed(2):pct.toFixed(1))+'%';
+    document.getElementById('oTv').textContent=fmt(tot/77*60);
+    document.getElementById('oMi').textContent=(tot/1348).toFixed(2);
+    document.getElementById('meterFill').style.width=Math.min(100,pct)+'%';
+    calcChart.data.datasets[0].data=parts; calcChart.update();
+  }
+  [text,long,img,vid].forEach(function(e){e.addEventListener('input',function(){ document.querySelectorAll('#presets button').forEach(function(x){x.classList.remove('on');}); calc(); });});
+  document.querySelectorAll('#estBtns button').forEach(function(b){b.addEventListener('click',function(){est=+b.dataset.e;document.querySelectorAll('#estBtns button').forEach(function(x){x.classList.toggle('on',x===b);});calc();});});
+  document.querySelectorAll('#presets button').forEach(function(b){b.addEventListener('click',function(){ var p=b.dataset.p.split(',').map(Number); text.value=p[0];long.value=p[1];img.value=p[2];vid.value=p[3];
+    document.querySelectorAll('#presets button').forEach(function(x){x.classList.toggle('on',x===b);}); calc(); });});
+  calc();
+
+  // ---------- Scale it up ----------
+  var suR=document.getElementById('suR');
+  function energyStr(wh){ var u=[[1e12,'TWh'],[1e9,'GWh'],[1e6,'MWh'],[1e3,'kWh'],[1,'Wh']]; for(var k=0;k<u.length;k++){ if(wh>=u[k][0]) return fmt(wh/u[k][0])+' '+u[k][1]; } return fmt(wh)+' Wh'; }
+  function bigNum(n){ if(n>=1e12) return (+(n/1e12).toPrecision(3))+' trillion'; if(n>=1e9) return (+(n/1e9).toPrecision(3))+' billion'; if(n>=1e6) return (+(n/1e6).toPrecision(3))+' million'; return Math.round(n).toLocaleString(); }
+  function su(){ var n=Math.pow(10,+suR.value), wh=n*Q;
+    document.getElementById('suN').textContent=bigNum(n);
+    document.getElementById('suE').textContent=energyStr(wh);
+    var h=wh/HOME; document.getElementById('suH').textContent=h<0.01? h.toExponential(1) : (h<10? h.toFixed(2) : Math.round(h).toLocaleString());
+    var s=wh/4.38e12*100; document.getElementById('suS').textContent=(s<0.001? s.toExponential(1) : (s<1? s.toPrecision(2) : Math.round(s)))+'%'; }
+  suR.addEventListener('input', su); su();
+
+  // ---------- US data centers ----------
+  onVisible(document.getElementById('usdc'), function(){
+    var ctx=document.getElementById('usdc').getContext('2d');
+    new Chart(ctx,{
+      type:'bar',
+      data:{labels:['2014','2018','2023','2028 (low)','2028 (high)'],datasets:[{data:[60,76,176,325,580],backgroundColor:['#67e8f9','#22d3ee','#0891b2',grad(ctx,'#c084fc','#7c3aed'),grad(ctx,'#f472b6','#be185d')],borderRadius:8}]},
+      options:{responsive:true,maintainAspectRatio:false,animation:{duration:1400,easing:'easeOutQuart',delay:function(c){return c.type==='data'?c.dataIndex*200:0;}},
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){var p=['','','4.4% of U.S. electricity','6.7%','12%'][c.dataIndex];return c.raw+' TWh'+(p?' ('+p+')':'');}}}},
+        scales:{y:{beginAtZero:true,max:650,title:{display:true,text:'TWh per year'},grid:{color:C.grid}},x:{grid:{display:false}}}},
+      plugins:[{id:'lbl',afterDatasetsDraw:function(ch){var ctx=ch.ctx;ctx.save();ctx.font='700 12px '+Chart.defaults.font.family;ctx.textAlign='center';ctx.fillStyle='#17142b';ch.getDatasetMeta(0).data.forEach(function(b,i){ctx.fillText(ch.data.datasets[0].data[i],b.x,b.y-7);});ctx.restore();}}]
+    });
+  });
+
+  // ---------- Scale ----------
+  var sc=[['All ChatGPT text prompts (2025)',0.31,'#7c3aed'],['STAMP data center at full load',4.38,'#ea580c'],['All U.S. data centers (2023)',176,'#0891b2'],['All data centers worldwide (2024)',415,'#1e1b4b']];
+  onVisible(document.getElementById('scale'), function(){
+    new Chart(document.getElementById('scale'),{
+      type:'bar',
+      data:{labels:sc.map(function(s){return s[0];}),datasets:[{data:sc.map(function(s){return s[1];}),backgroundColor:sc.map(function(s){return s[2];}),borderRadius:6}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:1200,easing:'easeOutQuart',delay:function(c){return c.type==='data'?c.dataIndex*250:0;}},
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.raw+' TWh/yr';}}}},
+        scales:{x:{type:'logarithmic',min:0.1,max:1000,title:{display:true,text:'TWh per year (log scale)'},ticks:{callback:logTick,autoSkip:false,maxRotation:0},grid:{color:logGrid}},y:{grid:{display:false},ticks:{font:{size:11.5}}}}},
+      plugins:[{id:'v',afterDatasetsDraw:function(ch){var ctx=ch.ctx,m=ch.getDatasetMeta(0);ctx.save();ctx.font='600 11.5px '+Chart.defaults.font.family;ctx.textBaseline='middle';m.data.forEach(function(b,i){var t=sc[i][1]+' TWh';var w=ctx.measureText(t).width;var x=b.x+6;if(x+w>ch.chartArea.right){x=b.x-6-w;ctx.fillStyle='#fff';}else ctx.fillStyle='#17142b';ctx.fillText(t,x,b.y);});ctx.restore();}}]
+    });
+  });
+})();
+</script>
+</body>
+</html>

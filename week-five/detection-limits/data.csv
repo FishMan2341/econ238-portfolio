@@ -1,0 +1,29 @@
+exhibit,series,item,value,unit,notes,source
+2,UCMR 3 official limits,PFOA,1.0,% of samples,EPA MRL 20 ppt,Eaton UCMR 3 PFAS presentation; EPA UCMR 3 MRL list
+2,UCMR 3 official limits,PFOS,0.8,% of samples,EPA MRL 40 ppt,Eaton; EPA
+2,UCMR 3 official limits,PFHxS,0.6,% of samples,EPA MRL 30 ppt,Eaton; EPA
+2,UCMR 3 official limits,PFBS,<0.1,% of samples,EPA MRL 90 ppt (plotted as 0.05),Eaton; EPA
+2,UCMR 3 official limits,PFHpA,0.6,% of samples,EPA MRL 10 ppt,Eaton; EPA
+2,UCMR 3 official limits,PFNA,0.1,% of samples,EPA MRL 20 ppt,Eaton; EPA
+2,Reported to 5 ppt,PFOA,12.5,% of samples,~10500-sample subset,Eaton
+2,Reported to 5 ppt,PFOS,11.5,% of samples,~10500-sample subset,Eaton
+2,Reported to 5 ppt,PFHxS,6.0,% of samples,~10500-sample subset,Eaton
+2,Reported to 5 ppt,PFBS,5.3,% of samples,~10500-sample subset,Eaton
+2,Reported to 5 ppt,PFHpA,3.3,% of samples,~10500-sample subset,Eaton
+2,Reported to 5 ppt,PFNA,0.6,% of samples,~10500-sample subset,Eaton
+3,Systems with any PFAS,UCMR 3 (2013-15),4.0,% of systems,194 of 4864; 6 PFAS; MRLs 10-90 ppt,Hu et al. 2016 (Harvard SEAS summary)
+3,Systems with any PFAS,UCMR 5 (2023-25),33.5,% of systems,3309 of 9876; 29 PFAS; MRLs 2-20 ppt; July 2025 interim,EPA UCMR 5 Data Summary July 2025
+3,Systems above PFOA/PFOS MCL,UCMR 5 final,7.8,% of systems,EPA estimate (running annual average > 4 ppt),Water Online Aug 2026
+3,Median blood PFOS (women 16-49),1999-2000,24,ng/mL,,EPA America's Children and the Environment (NHANES)
+3,Median blood PFOS (women 16-49),2017-2018,3,ng/mL,,EPA ACE (NHANES)
+3,Median blood PFOA (women 16-49),1999-2000,5,ng/mL,,EPA ACE (NHANES)
+3,Median blood PFOA (women 16-49),2017-2018,1,ng/mL,,EPA ACE (NHANES)
+4,Detection limit,1960 dioxin,1000000,ppt,~1 ppm,BfR
+4,Detection limit,1982 FDA many chemicals,1000,ppt,~1 ppb,Cato Regulation 1985 quoting FDA 1982
+4,Detection limit,2013 UCMR 3 PFOA MRL,20,ppt,,EPA UCMR 3
+4,Detection limit,2015 dioxin,0.001,ppt,~1 ppq,BfR
+4,Detection limit,2023 UCMR 5 PFOA/PFOS MRL,4,ppt,,EPA UCMR 5
+4,Legal limit,2024 PFOA/PFOS MCL,4,ppt,retained 2025; compliance 2031,EPA; FBM; SGS
+1,Simulation params,N chemicals,120,count,seed 2341,model in index.html
+1,Simulation params,log10 concentration ~ Normal,-1 / 2,mean / sd (log10 ppt),,model
+1,Simulation params,log10 benchmark ~ Normal,2.5 / 1.2,mean / sd (log10 ppt),,model
