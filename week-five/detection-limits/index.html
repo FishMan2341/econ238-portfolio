@@ -123,6 +123,23 @@
     .reveal{opacity:1;transform:none;transition:none}
     .dot{animation:none} .stat.bump{animation:none}
   }
+
+  .mainsec{padding:28px 26px}
+  .what{background:linear-gradient(135deg,#eef2ff,#ecfdf5);border:1px solid #c7d2fe;border-radius:14px;padding:16px 18px;margin:16px 0 10px}
+  .what h3{margin:0 0 6px;color:var(--indigo)}
+  .what p{margin:8px 0;font-size:16.5px}
+  .caveat{font-size:14.5px;color:var(--muted);border-left:4px solid var(--coral);padding:4px 0 4px 12px;margin:12px 0 0}
+  .deeperH{margin:34px 0 4px;font-size:22px} .deeperH span{font-size:13px;font-weight:400;color:var(--muted);margin-left:8px}
+  section.deep{padding:0;margin:12px 0}
+  section.deep>details{border:0;margin:0;padding:0;background:transparent}
+  section.deep>details>summary{list-style:none;cursor:pointer;padding:20px 54px 18px 22px;position:relative;display:block}
+  section.deep>details>summary::-webkit-details-marker{display:none}
+  section.deep>details>summary::after{content:"+";position:absolute;right:20px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;background:#eef1f8;color:var(--indigo);display:grid;place-items:center;font-size:20px;font-weight:700;transition:transform .25s}
+  section.deep>details[open]>summary::after{content:"\2212";transform:translateY(-50%) rotate(180deg)}
+  section.deep>details>summary:hover{background:#fafbff}
+  section.deep .st{display:block;font-size:18px;font-weight:800;color:var(--ink)}
+  section.deep .hint{display:block;font-size:13.5px;color:var(--muted);margin-top:2px}
+  section.deep .dbody{padding:0 22px 22px}
 </style>
 </head>
 <body>
@@ -134,38 +151,35 @@
     <h1>Same Water, More <span class="q">"Contaminants"</span></h1>
     <p class="lede">What happens when chemical detection improves 1,000x? Hold the water constant and lower only the lab's detection limit. The number of chemicals "found" shoots up. The amount people are exposed to does not change at all.</p>
     <div class="heroLive"><span class="dot"></span>Background: the same chemicals, as a better lab sweeps left. Detected: <b id="heroCount">0</b></div>
-    <div class="big3">
-      <div><b><span class="count" data-to="1000000000" data-sep="1">0</span>x</b><span>How much more sensitive dioxin testing became between 1960 (about 1 ppm) and 2015 (about 1 ppq)</span></div>
-      <div><b>≈1% → <span class="count" data-to="12.5" data-dec="1">0</span>%</b><span>Share of U.S. drinking-water samples with PFOA "detected" when the reporting limit drops from 20 ppt to 5 ppt</span></div>
-      <div><b>−<span class="count" data-to="85">0</span>%</b><span>Decline in Americans' blood PFOS levels since 1999–2000, during the same years PFAS detections exploded</span></div>
-    </div>
-    <nav class="toc">
-      <a href="#scale">The scale</a><a href="#sim">▶ Interactive model</a><a href="#eatonSec">Real data</a><a href="#bloodSec">Detections vs. exposure</a><a href="#tlSec">Timeline</a><a href="#takeSec">So what?</a>
-    </nav>
   </div>
 </header>
 
 <main class="wrap">
 
-<!-- SCALE -->
-<section id="scale" class="reveal" style="--accent:linear-gradient(90deg,#d97706,#0d9488,#4338ca,#f2542d)">
-  <span class="kicker" style="--kc:var(--gold)">First, the scale</span>
-  <h2>How small is a "part per trillion"?</h2>
-  <p class="sub">Concentrations in water are reported as parts per million (ppm), billion (ppb), trillion (ppt) and quadrillion (ppq). Each step is 1,000x smaller. Think of each "part" as one second.</p>
-  <table class="scale">
-    <tr><th>Unit</th><th>In water</th><th>As time: 1 second in…</th></tr>
-    <tr><td>1 ppm</td><td>1 milligram per liter</td><td>≈ 11.6 days</td></tr>
-    <tr><td>1 ppb</td><td>1 microgram per liter</td><td>≈ 31.7 years</td></tr>
-    <tr><td>1 ppt</td><td>1 nanogram per liter</td><td>≈ 31,700 years</td></tr>
-    <tr><td>1 ppq</td><td>1 picogram per liter</td><td>≈ 31.7 million years</td></tr>
-  </table>
-  <p class="note">The time comparisons are simple arithmetic: 10<sup>6</sup>, 10<sup>9</sup>, 10<sup>12</sup> and 10<sup>15</sup> seconds.</p>
+<section id="eatonSec" class="reveal mainsec" style="--accent:linear-gradient(90deg,#4338ca,#14b8a6)">
+  <span class="kicker" style="--kc:var(--indigo)">The main finding</span>
+  <h2>The same national survey, read at two detection limits</h2>
+  <p class="sub">EPA's third Unregulated Contaminant Monitoring Rule (UCMR 3, 2013–2015) tested U.S. public water systems for six PFAS ("forever chemicals"). Labs could only report results above EPA's minimum reporting limits of 10–90 ppt. Andrew Eaton's lab re-reported its subset of about 10,500 UCMR 3 samples down to 5 ppt. Nothing about the water changed.</p>
+  <div class="controls">
+    <button class="btn on" id="eatonOld">EPA's official limits (10–90 ppt)</button>
+    <button class="btn play" id="eatonNew">▼ Lower the limit to 5 ppt</button>
+  </div>
+  <div class="chart h340"><canvas id="eaton" aria-label="Bar chart of PFAS detection frequency at UCMR 3 limits vs 5 ppt"></canvas></div>
+  <p class="note">Percent of samples with the chemical "detected." Gray bars use the official UCMR 3 limits (shown in each label); colored bars use 5 ppt. PFBS at the official limit was &lt;0.1% (plotted as 0.05%). Eaton reports that at 2.5 ppt, detection frequencies roughly doubled again.</p>
+  <div class="what">
+    <h3>What this shows</h3>
+    <p>EPA's 2013–15 national drinking-water survey only reported PFAS above 10–90 ppt. Read the same survey down to 5 ppt and "detections" jump: <b>PFOA from about 1% of samples to 12.5%</b>, <b>PFOS from 0.8% to 11.5%</b>. Nothing about the water changed, only the instrument.</p>
+    <p>Over those same years, Americans' blood PFOS levels <b>fell more than 85%</b>. A rising count of "detected" contaminants can measure better labs, not more exposure. The question to ask is always: <i>how much, compared with what health benchmark?</i></p>
+  </div>
+  <p class="caveat"><b>The other side:</b> better detection isn't only noise. Today's 4 ppt PFOA/PFOS limit is below what the old survey could see, and EPA estimates about 7.8% of water systems exceed it. Detection reveals real risk up to a point; past that point it mostly adds headlines.</p>
 </section>
 
-<!-- SIMULATION -->
-<section id="sim" class="reveal" style="--accent:linear-gradient(90deg,#0d9488,#6366f1)">
-  <span class="kicker" style="--kc:var(--teal)">Exhibit 1 · Interactive model</span>
-  <h2>One glass of water, 120 chemicals, and a better lab</h2>
+<h2 class="deeperH">Go deeper <span>Click any card to open it</span></h2>
+
+<section id="sim" class="reveal deep" style="--accent:linear-gradient(90deg,#0d9488,#6366f1)">
+<details>
+<summary><span class="st">▶ Try it: one glass of water, 120 chemicals, and a better lab</span><span class="hint">Interactive model. Press play and watch detections climb while exposure stays flat.</span></summary>
+<div class="dbody">
   <p class="sub">Every dot is one chemical in the same hypothetical water supply. Its concentration <b>never changes</b>. You control only the lab's <b>detection limit</b> (the dashed line). Anything to the right of the line is "detected." Red dots are chemicals above their own health benchmark (a real risk). <b>Press play</b>, or drag the slider.</p>
 
   <div class="controls" id="presets">
@@ -207,26 +221,13 @@
     <p>There are 120 hypothetical chemicals. Each one's concentration is drawn from a lognormal distribution: log<sub>10</sub>(ppt) ~ Normal(mean −1, sd 2), so the median is 0.1 ppt. Each also gets its own health benchmark, log<sub>10</sub>(ppt) ~ Normal(2.5, 1.2), a median of about 300 ppt. A chemical is "detected" if its concentration ≥ the detection limit, and a "real exceedance" if its concentration &gt; its benchmark. Total exposure is the sum of all 120 concentrations. A fixed random seed (2341) means everyone sees the same water.</p>
     <p>Lognormal is the standard shape for environmental concentration data: many trace chemicals and a few at higher levels. The parameters are illustrative, not fitted to a specific dataset, so the <i>shape</i> of the result is the point, not the exact counts. Try changing them in the page source (<code>CONC_MEAN</code>, <code>CONC_SD</code>, <code>BENCH_MEAN</code>, <code>BENCH_SD</code>) to see what's robust. The detected count always rises as the limit falls. The risk count never does.</p>
   </details>
+</div>
+</details>
 </section>
-
-<!-- REAL DATA 1 -->
-<section id="eatonSec" class="reveal" style="--accent:linear-gradient(90deg,#4338ca,#14b8a6)">
-  <span class="kicker" style="--kc:var(--indigo)">Exhibit 2 · Real data</span>
-  <h2>The same national survey, read at two detection limits</h2>
-  <p class="sub">EPA's third Unregulated Contaminant Monitoring Rule (UCMR 3, 2013–2015) tested U.S. public water systems for six PFAS ("forever chemicals"). Labs could only report results above EPA's minimum reporting limits of 10–90 ppt. Andrew Eaton's lab re-reported its subset of about 10,500 UCMR 3 samples down to 5 ppt. Nothing about the water changed.</p>
-  <div class="controls">
-    <button class="btn on" id="eatonOld">EPA's official limits (10–90 ppt)</button>
-    <button class="btn play" id="eatonNew">▼ Lower the limit to 5 ppt</button>
-  </div>
-  <div class="chart h340"><canvas id="eaton" aria-label="Bar chart of PFAS detection frequency at UCMR 3 limits vs 5 ppt"></canvas></div>
-  <p class="note">Percent of samples with the chemical "detected." Gray bars use the official UCMR 3 limits (shown in each label); colored bars use 5 ppt. PFBS at the official limit was &lt;0.1% (plotted as 0.05%). Eaton reports that at 2.5 ppt, detection frequencies roughly doubled again.</p>
-  <div class="callout">PFOA went from about 1 in 100 samples to about 1 in 8 when the limit moved from 20 ppt to 5 ppt, a 4x change in the instrument. PFBS went from almost never to about 1 in 19.</div>
-</section>
-
-<!-- REAL DATA 2 -->
-<section id="bloodSec" class="reveal" style="--accent:linear-gradient(90deg,#14b8a6,#f2542d)">
-  <span class="kicker" style="--kc:var(--coral)">Exhibit 3 · Detections up, exposure down</span>
-  <h2>The headlines and the bloodstream moved in opposite directions</h2>
+<section id="bloodSec" class="reveal deep" style="--accent:linear-gradient(90deg,#14b8a6,#f2542d)">
+<details>
+<summary><span class="st">Detections went up while exposure went down</span><span class="hint">Water systems with PFAS detected vs. PFAS in Americans’ blood</span></summary>
+<div class="dbody">
   <div class="grid2">
     <div>
       <h3>Water systems with any PFAS detected <span style="color:var(--teal)">▲</span></h3>
@@ -240,12 +241,13 @@
     </div>
   </div>
   <div class="callout red"><b>But here's the other side.</b> Better detection is not only noise. The 2024 EPA limit for PFOA and PFOS is 4 ppt, below what UCMR 3 could even report (20 and 40 ppt). The older survey <i>could not see</i> many systems that are now over the legal limit. EPA estimates about <b>7.8% of systems</b> would exceed the PFOA or PFOS standard. In the model above, this is the stretch where the red line is still climbing: detection that reveals real risk. Past that point, detection keeps finding things that are probably not risks.</div>
+</div>
+</details>
 </section>
-
-<!-- TIMELINE -->
-<section id="tlSec" class="reveal" style="--accent:linear-gradient(90deg,#d97706,#e11d48)">
-  <span class="kicker" style="--kc:var(--gold)">Exhibit 4 · The moving finish line</span>
-  <h2>Detection limits have fallen about a billionfold; "zero" keeps moving</h2>
+<section id="tlSec" class="reveal deep" style="--accent:linear-gradient(90deg,#d97706,#e11d48)">
+<details>
+<summary><span class="st">Detection limits have fallen about a billionfold</span><span class="hint">From the 1958 Delaney Clause to today’s 4 ppt limit</span></summary>
+<div class="dbody">
   <div class="chart h340"><canvas id="timeline" aria-label="Timeline of detection limits on log scale"></canvas></div>
   <p class="note">Log scale, so each step down is 1,000x. Points are documented benchmarks for different chemicals and labs, not a single continuous series.</p>
   <ul class="timeline">
@@ -253,12 +255,29 @@
     <li style="--c:var(--teal)"><b>1980s:</b> FDA notes many chemicals can now be measured around 1 ppb. Zero tolerance becomes unworkable, and regulators move to risk thresholds such as a one-in-a-million lifetime cancer risk.</li>
     <li style="--c:var(--coral)"><b>2024:</b> EPA's health goal for PFOA and PFOS is literally zero, so the enforceable limit (4 ppt) was set at the lowest level labs can reliably measure. <b>The legal limit is defined by the instrument.</b> As of mid-2026, EPA has kept the PFOA/PFOS limits (compliance pushed to 2031) and proposed rescinding limits on four other PFAS.</li>
   </ul>
+</div>
+</details>
 </section>
-
-<!-- TAKEAWAYS -->
-<section id="takeSec" class="reveal" style="--accent:linear-gradient(90deg,#0d9488,#4338ca,#f2542d,#d97706,#e11d48)">
-  <span class="kicker" style="--kc:var(--indigo)">So what?</span>
-  <h2>What this shows, and what it doesn't</h2>
+<section id="scale" class="reveal deep" style="--accent:linear-gradient(90deg,#d97706,#0d9488,#4338ca,#f2542d)">
+<details>
+<summary><span class="st">How small is a "part per trillion"?</span><span class="hint">ppm, ppb, ppt and ppq explained as seconds of time</span></summary>
+<div class="dbody">
+  <p class="sub">Concentrations in water are reported as parts per million (ppm), billion (ppb), trillion (ppt) and quadrillion (ppq). Each step is 1,000x smaller. Think of each "part" as one second.</p>
+  <table class="scale">
+    <tr><th>Unit</th><th>In water</th><th>As time: 1 second in…</th></tr>
+    <tr><td>1 ppm</td><td>1 milligram per liter</td><td>≈ 11.6 days</td></tr>
+    <tr><td>1 ppb</td><td>1 microgram per liter</td><td>≈ 31.7 years</td></tr>
+    <tr><td>1 ppt</td><td>1 nanogram per liter</td><td>≈ 31,700 years</td></tr>
+    <tr><td>1 ppq</td><td>1 picogram per liter</td><td>≈ 31.7 million years</td></tr>
+  </table>
+  <p class="note">The time comparisons are simple arithmetic: 10<sup>6</sup>, 10<sup>9</sup>, 10<sup>12</sup> and 10<sup>15</sup> seconds.</p>
+</div>
+</details>
+</section>
+<section id="takeSec" class="reveal deep" style="--accent:linear-gradient(90deg,#0d9488,#4338ca,#f2542d,#d97706,#e11d48)">
+<details>
+<summary><span class="st">All five takeaways (and what this doesn’t claim)</span><span class="hint">The full argument in five cards</span></summary>
+<div class="dbody">
   <div class="cards">
     <div class="card"><div class="n" style="background:var(--teal)">1</div><b>"Detected" describes the lab, not the risk.</b><p>A rising count of contaminants can be produced entirely by better instruments, with no change in the water.</p></div>
     <div class="card"><div class="n" style="background:var(--indigo)">2</div><b>Dose is the risk question.</b><p>The question to ask about any "X found in Y" headline: at what concentration, compared with what health benchmark?</p></div>
@@ -267,12 +286,13 @@
     <div class="card"><div class="n" style="background:var(--gold)">5</div><b>The economics.</b><p>When a legal limit is pegged to what labs can detect, every improvement in chemistry can widen the regulated universe, along with testing, treatment and litigation costs, without new evidence of harm. Regulators have to decide where the marginal benefit of finding more stops being worth the marginal cost.</p></div>
   </div>
   <p class="sub"><b>Not claimed here:</b> that PFAS are harmless, or that any specific detection is safe. The claim is narrower: the <i>count</i> of detected contaminants, on its own, does not measure exposure or risk.</p>
+</div>
+</details>
 </section>
-
-<!-- METHOD -->
-<section class="reveal" style="--accent:linear-gradient(90deg,#64748b,#94a3b8)">
-  <span class="kicker" style="--kc:#475569">How this was made</span>
-  <h2>Methods, AI use, and how to extend this</h2>
+<section class="reveal deep" style="--accent:linear-gradient(90deg,#64748b,#94a3b8)">
+<details>
+<summary><span class="st">Methods, AI use, and how to extend this</span><span class="hint">What I asked the AI to do, the computations, and next questions</span></summary>
+<div class="dbody">
   <h3>What I asked the AI (Claude) to do</h3>
   <ul class="plain">
     <li>Find national datasets where the <i>same</i> water was evaluated at different detection limits. This turned up Eaton's UCMR 3 re-analysis, which I then checked against EPA's official UCMR 3 reporting limits.</li>
@@ -293,10 +313,13 @@
     <li>Estimate the cost per microgram of exposure avoided as the treatment target moves from 70 ppt (EPA's 2016 health advisory, see Hu et al.) to 4 ppt.</li>
   </ul>
   <p>Data used in the charts: <a href="data.csv">data.csv</a></p>
+</div>
+</details>
 </section>
-
-<section class="reveal" style="--accent:linear-gradient(90deg,#94a3b8,#cbd5e1)">
-  <span class="kicker" style="--kc:#64748b">Sources</span>
+<section class="reveal deep" style="--accent:linear-gradient(90deg,#94a3b8,#cbd5e1)">
+<details>
+<summary><span class="st">Sources (11)</span><span class="hint">Every dataset and document used</span></summary>
+<div class="dbody">
   <ol class="src">
     <li>Eaton, A. "UCMR 3 PFAS data" presentation (re-analysis at 5 and 2.5 ng/L). <a href="https://pfascentral.org/perch/resources/science/andyeatonucmr3pfasdata-1.pdf">pfascentral.org</a></li>
     <li>U.S. EPA, Third Unregulated Contaminant Monitoring Rule: analytes and minimum reporting levels. <a href="https://19january2021snapshot.epa.gov/dwucmr/third-unregulated-contaminant-monitoring-rule_.html">epa.gov (archived)</a></li>
@@ -310,6 +333,8 @@
     <li>Beveridge &amp; Diamond (2023), "EPA Proposes Novel National Primary Drinking Water Regulation for Certain PFAS" (4.0 ppt = lowest level approved methods can reliably quantify; MCLG of zero). <a href="https://bdlaw.com/publications/epa-proposes-novel-national-primary-drinking-water-regulation-for-certain-pfas">bdlaw.com</a></li>
     <li>SGS (June 2026), EPA announcement on the PFAS MCLs. <a href="https://env.sgs.com/2026/06/01/epa-announcement-on-the-mcls/">sgs.com</a>; Farella Braun + Martel (May 2025) on the PFOA/PFOS retention. <a href="https://www.fbm.com/per-and-polyfluoroalkyl-substances-pfas/publications/epa-announces-it-will-keep-drinking-water-limits-for-pfoa-and-pfos-but-rescind-limits-for-four-other-pfas-compounds/">fbm.com</a></li>
   </ol>
+</div>
+</details>
 </section>
 
 </main>
@@ -337,6 +362,8 @@
   document.querySelectorAll('.reveal').forEach(function(s){ onVisible(s,function(){ s.classList.add('in'); }); });
   document.querySelectorAll('.count').forEach(function(c){ onVisible(c,function(){ countUp(c); }); });
   setTimeout(function(){ document.querySelectorAll('.reveal').forEach(function(s){ s.classList.add('in'); }); }, 4000); // safety for printing/screenshots
+
+  document.querySelectorAll('section.deep details').forEach(function(d){ d.addEventListener('toggle',function(){ if(d.open){ setTimeout(function(){ Object.values(Chart.instances).forEach(function(c){ c.resize(); }); },30); } }); });
 
   // ---------- Simulation parameters (edit these to test robustness) ----------
   var N = 120, SEED = 2341;
