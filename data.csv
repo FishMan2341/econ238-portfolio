@@ -1,0 +1,22 @@
+exhibit,item,value,unit,notes,source
+1,Small AI model answer (Llama 3.1 8B),0.032,Wh,114 J,MIT Technology Review 2025
+1,Gemini median text prompt,0.24,Wh,full-system boundary; 0.10 Wh chips only,Google Cloud Aug 2025
+1,Google search,0.3,Wh,0.0003 kWh,Google 2009 via Atlantic Council
+1,ChatGPT average query,0.34,Wh,,Altman Jun 2025
+1,AI image (Stable Diffusion 3 Medium),0.63,Wh,2282 J,MIT Technology Review 2025
+1,Large AI model answer (Llama 3.1 405B),1.86,Wh,6706 J,MIT Technology Review 2025
+1,ChatGPT query 2023 estimate,3,Wh,,de Vries 2023 via Epoch AI
+1,LED bulb 1 hour,10,Wh,10 W assumption,arithmetic
+1,Microwave 1 minute,16.7,Wh,1000 W assumption,arithmetic
+1,Prompt with 100k-token input,40,Wh,,Epoch AI Feb 2025
+1,Streaming video 1 hour,77,Wh,2019 data incl. device and network,IEA 2020
+1,5-second AI video,444,Wh,700 x 2282 J,MIT Technology Review 2025 (derived)
+1,Driving 1 mile 25 mpg gas car,1348,Wh,33.7 kWh/gal / 25 mpg,EPA MPGe convention (arithmetic)
+1,Average US home 1 day,28454,Wh,865 kWh/month,EIA 2024
+4,US data centers 2014,60,TWh,,LBNL Dec 2024
+4,US data centers 2018,76,TWh,,LBNL Dec 2024
+4,US data centers 2023,176,TWh,4.4% of US electricity,LBNL Dec 2024
+4,US data centers 2028 low,325,TWh,6.7%,LBNL Dec 2024
+4,US data centers 2028 high,580,TWh,12%,LBNL Dec 2024
+4,Global data centers 2024,415,TWh,1.5% of world electricity; ~945 TWh by 2030,IEA Energy and AI 2025
+4,All ChatGPT text prompts per year,0.31,TWh,2.5e9 prompts/day x 0.34 Wh x 365,TechCrunch Jul 2025 + Altman (derived)
